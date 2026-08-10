@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling>=1.22.0,<2.0.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pdf-process"
+version = "0.1.0"
+description = "Convert PDFs into structured JSON, HTML, text, and optional Typst."
+authors = [{name = "Mert Kurttutan", email = "kurttutan.mert@gmail.com"}]
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "requests>=2.32.0",
+]
+
+[project.scripts]
+pdf-process = "pdf_process.cli:main"
+pdf2html = "pdf_process.cli:main"
+pdf-process-mathjax = "pdf_process.cli:preview_main"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pdf_process"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+indent-width = 4
+extend-exclude = ["out", "assets"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.15.0",
+]
