@@ -27,7 +27,7 @@ pub struct HtmlArgs {
     /// Datalab API key. Defaults to `DATALAB_API_KEY`.
     #[arg(long)]
     pub api_key: Option<String>,
-    /// Directory for generated files. Defaults to the input PDF directory.
+    /// Parent directory for generated document output directories.
     #[arg(long)]
     pub output_dir: Option<PathBuf>,
     /// Datalab conversion mode for the whole PDF.
@@ -68,10 +68,10 @@ pub fn run() -> Result<(), WorkflowError> {
     } = Cli::parse();
     let options = WorkflowOptions {
         api_key: args.api_key,
+        output_dir: args.output_dir,
         mode: args.mode,
         typst: args.typst,
         mathjax_preview: args.mathjax_preview,
-        output_dir: args.output_dir,
         save_metadata: !args.no_metadata,
         poll_interval: Duration::from_secs_f64(args.poll_interval),
         timeout: Duration::from_secs_f64(args.timeout),

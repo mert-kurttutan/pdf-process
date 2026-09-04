@@ -74,11 +74,23 @@ Choose a Datalab mode:
 cargo run -- html assets/paper.pdf --mode balanced
 ```
 
-Use a different output directory:
+Generated files are placed in a directory named `<stem>.out`, beside the input
+PDF by default:
 
 ```sh
-cargo run -- html assets/paper.pdf --output-dir out/paper
+cargo run -- html assets/paper.pdf
 ```
+
+This writes all artifacts under `assets/paper.out/`. The command fails if
+that directory already exists.
+
+Choose a different parent output directory:
+
+```sh
+cargo run -- html assets/paper.pdf --output-dir out
+```
+
+This writes all artifacts under `out/paper.out/`.
 
 ## Math And Typst
 

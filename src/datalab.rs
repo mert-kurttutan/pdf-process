@@ -87,6 +87,7 @@ pub struct ConvertResult {
 /// the conversion is unsuccessful, or its returned images cannot be saved.
 pub fn convert_pdf_to_html(
     input_pdf: &Path,
+    output_dir: &Path,
     options: &DatalabOptions,
 ) -> Result<ConvertResult, DatalabError> {
     validate_input(input_pdf)?;
@@ -157,10 +158,7 @@ pub fn convert_pdf_to_html(
         .filter(|html| !html.trim().is_empty())
         .ok_or(DatalabError::MissingHtml)?
         .to_owned();
-    save_images(
-        input_pdf.parent().unwrap_or_else(|| Path::new(".")),
-        result.get("images"),
-    )?;
+    save_images(output_dir, result.get("images"))?;
     Ok(ConvertResult {
         html,
         raw_response: result,

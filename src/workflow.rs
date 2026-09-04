@@ -23,15 +23,17 @@ pub enum WorkflowError {
     Io(#[from] std::io::Error),
     #[error("could not serialize Datalab metadata: {0}")]
     Json(#[from] serde_json::Error),
+    #[error("output path already exists: {0}")]
+    OutputExists(PathBuf),
 }
 
 #[derive(Debug, Clone)]
 pub struct WorkflowOptions {
     pub api_key: Option<String>,
+    pub output_dir: Option<PathBuf>,
     pub mode: String,
     pub typst: bool,
     pub mathjax_preview: bool,
-    pub output_dir: Option<PathBuf>,
     pub save_metadata: bool,
     pub poll_interval: Duration,
     pub timeout: Duration,
@@ -41,10 +43,10 @@ impl Default for WorkflowOptions {
     fn default() -> Self {
         Self {
             api_key: None,
+            output_dir: None,
             mode: "accurate".to_owned(),
             typst: false,
             mathjax_preview: true,
-            output_dir: None,
             save_metadata: true,
             poll_interval: Duration::from_secs(2),
             timeout: Duration::from_secs(600),
@@ -70,6 +72,11 @@ pub fn convert_pdf(
     input_pdf: &Path,
     options: &WorkflowOptions,
 ) -> Result<WorkflowOutput, WorkflowError> {
+    let target_dir = output_directory(input_pdf, options.output_dir.as_deref());
+    if target_dir.exists() {
+        return Err(WorkflowError::OutputExists(target_dir));
+    }
+    fs::create_dir(&target_dir)?;
     let datalab_options = DatalabOptions {
         api_key: options.api_key.clone(),
         mode: options.mode.clone(),
@@ -77,20 +84,23 @@ pub fn convert_pdf(
         timeout: options.timeout,
         ..DatalabOptions::default()
     };
-    let result = convert_pdf_to_html(input_pdf, &datalab_options)?;
-    write_outputs(input_pdf, options, &result)
+    let result = convert_pdf_to_html(input_pdf, &target_dir, &datalab_options)?;
+    write_outputs(&target_dir, input_pdf, options, &result)
+}
+
+fn output_directory(input_pdf: &Path, output_parent: Option<&Path>) -> PathBuf {
+    let parent =
+        output_parent.unwrap_or_else(|| input_pdf.parent().unwrap_or_else(|| Path::new(".")));
+    let stem = input_pdf.file_stem().unwrap_or_default().to_string_lossy();
+    parent.join(format!("{stem}.out"))
 }
 
 fn write_outputs(
+    target_dir: &Path,
     input_pdf: &Path,
     options: &WorkflowOptions,
     result: &ConvertResult,
 ) -> Result<WorkflowOutput, WorkflowError> {
-    let target_dir = options
-        .output_dir
-        .as_deref()
-        .unwrap_or_else(|| input_pdf.parent().unwrap_or_else(|| Path::new(".")));
-    fs::create_dir_all(target_dir)?;
     let stem = input_pdf.file_stem().unwrap_or_default().to_string_lossy();
     let html_path = target_dir.join(format!("{stem}.html"));
     fs::write(&html_path, &result.html)?;
