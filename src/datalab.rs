@@ -57,8 +57,6 @@ pub struct DatalabOptions {
     pub api_key: Option<String>,
     pub mode: String,
     pub add_block_ids: bool,
-    pub disable_image_extraction: bool,
-    pub save_images: bool,
     pub poll_interval: Duration,
     pub timeout: Duration,
 }
@@ -69,8 +67,6 @@ impl Default for DatalabOptions {
             api_key: None,
             mode: "accurate".to_owned(),
             add_block_ids: true,
-            disable_image_extraction: false,
-            save_images: true,
             poll_interval: Duration::from_secs(2),
             timeout: Duration::from_secs(600),
         }
@@ -117,10 +113,7 @@ pub fn convert_pdf_to_html(
         .text("output_format", "html")
         .text("paginate", "false")
         .text("add_block_ids", bool_form(options.add_block_ids))
-        .text(
-            "disable_image_extraction",
-            bool_form(options.disable_image_extraction),
-        )
+        .text("disable_image_extraction", "false")
         .part("file", file);
 
     let client = Client::builder().timeout(DEFAULT_REQUEST_TIMEOUT).build()?;
@@ -164,12 +157,10 @@ pub fn convert_pdf_to_html(
         .filter(|html| !html.trim().is_empty())
         .ok_or(DatalabError::MissingHtml)?
         .to_owned();
-    if options.save_images {
-        save_images(
-            input_pdf.parent().unwrap_or_else(|| Path::new(".")),
-            result.get("images"),
-        )?;
-    }
+    save_images(
+        input_pdf.parent().unwrap_or_else(|| Path::new(".")),
+        result.get("images"),
+    )?;
     Ok(ConvertResult {
         html,
         raw_response: result,
