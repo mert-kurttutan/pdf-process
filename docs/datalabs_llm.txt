@@ -1,0 +1,226 @@
+# Datalab Documentation
+
+- [Welcome to Datalab](https://documentation.datalab.to/index.md): Datalab provides document intelligence APIs to convert PDFs, spreadsheets, and images into structured, machine-readable outputs.
+- [Quickstart](https://documentation.datalab.to/docs/welcome/quickstart.md): Get started with Datalab to convert PDFs, images, and documents into Markdown, HTML, or JSON in minutes.
+- [Python SDK](https://documentation.datalab.to/docs/welcome/sdk.md): The Datalab Python SDK provides a simple interface for document conversion, pipelines, structured extraction, form filling, and file management.
+- [Document Conversion](https://documentation.datalab.to/docs/welcome/sdk/conversion.md): Convert PDFs, images, and documents to Markdown, HTML, JSON, or chunks using the Datalab SDK.
+- [Structured Extraction](https://documentation.datalab.to/docs/welcome/sdk/extraction.md): Extract structured data from documents using JSON schemas with the Datalab SDK.
+- [Document Segmentation](https://documentation.datalab.to/docs/welcome/sdk/segmentation.md): Segment documents into logical sections using the Datalab SDK.
+- [Form Filling](https://documentation.datalab.to/docs/welcome/sdk/form-filling.md): Fill PDF and image forms with structured field data using the Datalab SDK.
+- [File Management](https://documentation.datalab.to/docs/welcome/sdk/file-management.md): Upload, list, and manage files in Datalab storage using the SDK.
+- [Pipelines](https://documentation.datalab.to/docs/welcome/sdk/pipelines.md): Create, version, and run document processing pipelines using the Datalab SDK.
+- [Command Line Interface](https://documentation.datalab.to/docs/welcome/sdk/cli.md): Use the Datalab CLI to convert documents from the command line.
+- [API Overview](https://documentation.datalab.to/docs/welcome/api.md): REST API reference for document conversion, form filling, and file management.
+- [API Limits & Rate Limiting](https://documentation.datalab.to/docs/common/limits.md): File size limits, page limits, and rate limits for the Datalab API.
+- [Supported File Types](https://documentation.datalab.to/docs/common/supportedfiletypes.md): File formats and extensions Datalab accepts for document conversion and extraction.
+- [Overview](https://documentation.datalab.to/docs/on-prem/overview.md): Run inference on your own infrastructure
+- [API](https://documentation.datalab.to/docs/on-prem/api.md): Our on-prem container's API mimics Datalab's API.
+- [Usage Analytics](https://documentation.datalab.to/docs/on-prem/usage-analytics.md): Monitor inference request analytics and performance metrics in your on-prem deployment.
+- [Running the Container](https://documentation.datalab.to/docs/on-prem/running-the-container.md): Getting our container up-and-running takes minutes.
+- [Version Policies](https://documentation.datalab.to/platform/versioning.md): How Datalab versions its API, SDK, and on-prem container, and our backwards-compatibility guarantees.
+- [Webhooks](https://documentation.datalab.to/platform/webhooks.md): Configure webhooks to receive real-time notifications when Datalab jobs complete.
+- [Billing](https://documentation.datalab.to/platform/billing.md): How Datalab's per-page pricing, credits, and usage tracking work.
+- [Security Best Practices](https://documentation.datalab.to/platform/security.md): Keep your Datalab integration secure with these best practices.
+- [Error Codes](https://documentation.datalab.to/platform/errors.md): HTTP error codes, response formats, and retry guidance.
+- [Troubleshooting](https://documentation.datalab.to/platform/troubleshooting.md): Common issues and solutions when using the Datalab API.
+- [Migration Guide](https://documentation.datalab.to/platform/migration.md): Migrate from deprecated endpoints to the current API.
+- [Changelog](https://documentation.datalab.to/platform/changelog.md): Major changes to the Datalab hosted service are listed here.
+- [Recipes Overview](https://documentation.datalab.to/docs/recipes/overview.md): End-to-end guides for common document processing workflows.
+- [Document Conversion](https://documentation.datalab.to/docs/recipes/conversion/conversion-api-overview.md): Convert documents to Markdown, HTML, JSON, or chunks using the Convert API.
+- [Batch Processing](https://documentation.datalab.to/docs/recipes/conversion/batch-documents.md): Convert multiple documents efficiently with parallel processing.
+- [Structured Extraction](https://documentation.datalab.to/docs/recipes/structured-extraction/api-overview.md): Extract structured data from documents using JSON schemas.
+- [Balanced Extraction Mode](https://documentation.datalab.to/docs/recipes/structured-extraction/balanced-mode.md): Extraction with per-field verification, reasoning, and citations.
+- [Saved Schemas](https://documentation.datalab.to/docs/recipes/structured-extraction/saved-schemas.md): Create and manage reusable extraction schemas in the Datalab UI. Reference saved schemas by ID instead of sending the full schema with every request.
+- [Extraction Confidence Scoring](https://documentation.datalab.to/docs/recipes/structured-extraction/confidence-scoring.md): Score extraction results with per-field confidence ratings and reasoning.
+- [Handling Long Documents](https://documentation.datalab.to/docs/recipes/structured-extraction/handling-long-documents.md): Tips for structured extraction on documents with 50+ pages.
+- [Document Segmentation](https://documentation.datalab.to/docs/recipes/document-segmentation/auto-segmentation.md): Automatically split multi-document PDFs into separate segments.
+- [Form Filling](https://documentation.datalab.to/docs/recipes/form-filling/form-filling-api-overview.md): Automatically fill PDF and image forms with structured data.
+- [File Upload](https://documentation.datalab.to/docs/recipes/file-management/file-upload-api.md): Upload and manage files for use in pipelines and document processing.
+- [Pipelines](https://documentation.datalab.to/docs/recipes/pipelines/pipeline-overview.md): Build versioned document processing pipelines by chaining processors together.
+- [Create a Pipeline](https://documentation.datalab.to/docs/recipes/pipelines/create-pipeline.md): Build pipelines using Forge or the SDK to chain document processors.
+- [Pipeline Versioning](https://documentation.datalab.to/docs/recipes/pipelines/pipeline-versioning.md): Manage pipeline drafts, publish immutable versions, and pin production deployments.
+- [Run a Pipeline](https://documentation.datalab.to/docs/recipes/pipelines/run-pipeline.md): Execute pipelines with version selection, overrides, polling, and per-processor result retrieval.
+- [Custom Processors](https://documentation.datalab.to/docs/recipes/pipelines/custom-processors.md): Fine-tune document conversion output with AI-generated custom processors.
+- [Create Document](https://documentation.datalab.to/docs/recipes/create-document/create-document-api-overview.md): Generate DOCX files from markdown with track changes support.
+- [Track Changes](https://documentation.datalab.to/docs/recipes/extract-redlines-and-comments/track-changes-from-word-documents.md): Pull tracked changes and comments from Word documents, PDFs, and images for review workflows
+- [Forge Evals](https://documentation.datalab.to/docs/recipes/forge-evals/overview.md): Compare parsing configurations across multiple documents to find the best settings for your use case
+- [Compliance Webhook](https://documentation.datalab.to/api-reference/compliance/compliance-webhook.md): Provider webhook: verify, persist the raw event (deduped), enqueue reconcile. Returns 200 fast; the enqueued reconcile re-fetches authoritative status.
+- [Health](https://documentation.datalab.to/api-reference/health.md): This endpoint is used to check the health of the API.  Returns a JSON object with the key "status" set to "ok".
+- [Api Health](https://documentation.datalab.to/api-reference/api-health.md): This endpoint is used to check the health of the API, given an API key.
+- [Generate Extraction Schemas](https://documentation.datalab.to/api-reference/generate-extraction-schemas.md): For a given file, generate potential extraction schemas.
+- [[DEPRECATED] Table Recognition](https://documentation.datalab.to/api-reference/[deprecated]-table-recognition.md): [DEPRECATED] This endpoint is deprecated and will be removed in the future. This endpoint is used to submit a request for table recognition.  The detected tables will be returned, as well as their parsed structure.
+- [[DEPRECATED] OCR](https://documentation.datalab.to/api-reference/[deprecated]-ocr.md): [DEPRECATED] This endpoint is deprecated and will be removed in the future. This endpoint is used to submit a PDF or image for OCR.  The OCR text lines will be returned, along with their bbox and polygon coordinates.
+- [Form Filling](https://documentation.datalab.to/api-reference/form-filling.md): Fill PDF or image forms with provided field data. Supports PDFs with and without native form fields.
+- [Create Document](https://documentation.datalab.to/api-reference/create-document.md): Create a DOCX document from markdown with track changes support. Supports <ins>, <del>, and <comment> tags.
+- [Convert Document](https://documentation.datalab.to/api-reference/convert-document.md): Convert a PDF, image, or document to markdown, HTML, JSON, or chunks. Use save_checkpoint=true to save parsed state for later /extract or /segment calls.
+- [Run Document Agent](https://documentation.datalab.to/api-reference/run-document-agent.md): Run a published agent processor on a document. Address it with processor=<id>, optionally pinned to a version as <id>@<version>; omit the version to run the newest published one. The run configuration comes entirely from the processor's frozen contract.
+- [Run Custom Pipeline (Deprecated)](https://documentation.datalab.to/api-reference/run-custom-pipeline-deprecated.md): Deprecated: custom processors are superseded by agent processors. Run POST /api/v1/agent with processor=<your custom processor id> (optionally pinned as <id>@<version>.0). An equivalent agent processor has already been created for every custom processor.
+- [Run Custom Processor (Deprecated)](https://documentation.datalab.to/api-reference/run-custom-processor-deprecated.md): Deprecated: custom processors are superseded by agent processors. Run POST /api/v1/agent with processor=<your custom processor id> (optionally pinned as <id>@<version>.0). An equivalent agent processor has already been created for every custom processor.
+- [Track Changes](https://documentation.datalab.to/api-reference/track-changes.md): Extract and display tracked changes and margin comments from DOCX or PDF documents (scanned PDFs supported). Returns markdown, HTML, and/or chunks with inline change annotations. DOCX changes are extracted exactly from the document; PDFs are read by a vision model.
+- [Thumbnails](https://documentation.datalab.to/api-reference/thumbnails.md)
+- [Marker Result Check](https://documentation.datalab.to/api-reference/marker-result-check.md): Poll this endpoint to check status of Marker request and retrieve final results
+- [OCR Result Check](https://documentation.datalab.to/api-reference/ocr-result-check.md): Poll this endpoint to check status of an OCR request and retrieve final results
+- [Table Rec Result Check](https://documentation.datalab.to/api-reference/table-rec-result-check.md): Poll this endpoint to check status of Table Rec request and retrieve final results
+- [Extraction Schema Generation Result Check](https://documentation.datalab.to/api-reference/extraction-schema-generation-result-check.md): Poll this endpoint to check status of an Extraction Schema Generation request and retrieve final results
+- [Form Filling Result Check](https://documentation.datalab.to/api-reference/form-filling-result-check.md): Poll this endpoint to check status of a Form Filling request and retrieve the filled form
+- [Create Document Result Check](https://documentation.datalab.to/api-reference/create-document-result-check.md): Poll this endpoint to check status of a Create Document request and retrieve the generated document
+- [Convert Result Check](https://documentation.datalab.to/api-reference/convert-result-check.md): Poll this endpoint to check the status of a Convert request and retrieve the converted document.
+- [Extract Result Check](https://documentation.datalab.to/api-reference/extract-result-check.md): Poll this endpoint to check the status of an Extract request and retrieve the extracted structured data.
+- [Segment Result Check](https://documentation.datalab.to/api-reference/segment-result-check.md): Poll this endpoint to check the status of a Segment request and retrieve the segmentation results.
+- [Agent Result Check](https://documentation.datalab.to/api-reference/agent-result-check.md): Poll this endpoint to check the status of an Agent request and retrieve the results.
+- [Custom Processor Result Check (Deprecated)](https://documentation.datalab.to/api-reference/custom-processor-result-check-deprecated.md): Poll this endpoint to check the status of a Custom Processor request and retrieve the results. Deprecated: custom processors are superseded by agent processors. Run POST /api/v1/agent with processor=<your custom processor id> (optionally pinned as <id>@<version>.0). An equivalent agent processor has…
+- [Track Changes Result Check](https://documentation.datalab.to/api-reference/track-changes-result-check.md): Poll this endpoint to check the status of a Track Changes request and retrieve the results.
+- [[DEPRECATED] Marker](https://documentation.datalab.to/api-reference/[deprecated]-marker.md): **DEPRECATED**: Use the new endpoints instead: - `/convert` for document conversion - `/extract` for structured data extraction - `/segment` for document segmentation - `/custom-pipeline` for custom pipeline execution
+- [Extract Structured Data](https://documentation.datalab.to/api-reference/extract-structured-data.md): Extract structured data from a document using a JSON schema. Provide a file for end-to-end processing, or a checkpoint_id from a previous /convert call to skip re-parsing.
+- [Segment Document](https://documentation.datalab.to/api-reference/segment-document.md): Segment a document into sections using a schema. Returns page ranges for each identified segment. Provide a file for end-to-end processing, or a checkpoint_id from a previous /convert call.
+- [Check Pipeline Access](https://documentation.datalab.to/api-reference/custom-processors/check-pipeline-access.md): Check if the current user's team has access to custom processors.
+- [Get Creation Allowance](https://documentation.datalab.to/api-reference/custom-processors/get-creation-allowance.md): 2026 custom-processor CREATION allowance preview for the current team (§5).
+- [List Custom Pipelines](https://documentation.datalab.to/api-reference/custom-processors/list-custom-pipelines.md): List all custom processors for a team. Returns processors ordered by creation date (newest first).
+- [Submit Custom Pipeline](https://documentation.datalab.to/api-reference/custom-processors/submit-custom-pipeline.md): Submit a custom processor generation request.
+- [Get Custom Pipeline Status](https://documentation.datalab.to/api-reference/custom-processors/get-custom-pipeline-status.md): Check the status of a custom processor generation request using the request_check_url from the initial submission.
+- [Transfer Custom Pipeline](https://documentation.datalab.to/api-reference/custom-processors/transfer-custom-pipeline.md): Transfer a custom processor to another team. This endpoint allows admins to transfer ownership of a custom processor from one team to another. This is useful for: 1. Beta testing: Create and test processors internally, then transfer to customers 2. Sharing: Move successful processor configurations b…
+- [Archive Custom Pipeline](https://documentation.datalab.to/api-reference/custom-processors/archive-custom-pipeline.md): Archive a custom processor (soft-delete). Available to any team member with pipeline access.
+- [Delete Custom Pipeline](https://documentation.datalab.to/api-reference/custom-processors/delete-custom-pipeline.md): Permanently delete a custom processor and all its versions. Admin-only.
+- [Restore Custom Pipeline](https://documentation.datalab.to/api-reference/custom-processors/restore-custom-pipeline.md): Restore an archived custom processor. Admin-only.
+- [Iterate Custom Pipeline](https://documentation.datalab.to/api-reference/custom-processors/iterate-custom-pipeline.md): Iterate on an existing custom processor.
+- [List Pipeline Versions](https://documentation.datalab.to/api-reference/custom-processors/list-pipeline-versions.md): List all versions of a custom processor, ordered by version descending.
+- [Get Processor Version Detail](https://documentation.datalab.to/api-reference/custom-processors/get-processor-version-detail.md): Get detailed data for a specific processor version, including pipeline_params and eval_definition.
+- [Set Active Pipeline Version](https://documentation.datalab.to/api-reference/custom-processors/set-active-pipeline-version.md): Set the active version of a custom processor. Changes the active_version pointer to any existing version.
+- [Get Pipelines Using Processor](https://documentation.datalab.to/api-reference/custom-processors/get-pipelines-using-processor.md): List pipelines (from the Pipeline table) that reference this custom processor in their steps JSON.
+- [Seed Custom Pipeline](https://documentation.datalab.to/api-reference/custom-processors/seed-custom-pipeline.md): Directly create a completed custom processor from JSON. Admin-only.
+- [Get Pipeline Eval Definition](https://documentation.datalab.to/api-reference/custom-processors/get-pipeline-eval-definition.md): Get the eval_definition from a custom processor's active version.
+- [Update Pipeline Eval Definition](https://documentation.datalab.to/api-reference/custom-processors/update-pipeline-eval-definition.md): Update the eval_definition on a custom processor's active version.
+- [Set Processor Eval Rubric](https://documentation.datalab.to/api-reference/custom-processors/set-processor-eval-rubric.md): Link or detach an EvalRubric on a custom processor.
+- [Export Custom Pipeline](https://documentation.datalab.to/api-reference/custom-processors/export-custom-pipeline.md): Export a custom processor with all versions. Admin-only.
+- [Describe Customizer](https://documentation.datalab.to/api-reference/custom-processors/describe-customizer.md): Conversational endpoint for building a custom processor description. Accepts the chat history, returns the next assistant message. When the system has enough context, includes a proposed_description.
+- [List Templates](https://documentation.datalab.to/api-reference/processor-templates/list-templates.md): List all published pipeline templates.
+- [Promote To Template](https://documentation.datalab.to/api-reference/processor-templates/promote-to-template.md): Create a template by copying an existing completed processor. Admin-only.
+- [Get Template](https://documentation.datalab.to/api-reference/processor-templates/get-template.md): Get detailed info for a pipeline template.
+- [Update Template](https://documentation.datalab.to/api-reference/processor-templates/update-template.md): Update template metadata. Admin-only.
+- [Remove Template](https://documentation.datalab.to/api-reference/processor-templates/remove-template.md): Un-template a pipeline (sets is_template=False). Admin-only.
+- [Download Template Example](https://documentation.datalab.to/api-reference/processor-templates/download-template-example.md): Fetch example file from R2 and return content directly.
+- [Remove Template Example](https://documentation.datalab.to/api-reference/processor-templates/remove-template-example.md): Remove an example file from a template. Admin-only.
+- [Download Template Example Thumbnail](https://documentation.datalab.to/api-reference/processor-templates/download-template-example-thumbnail.md): Stream thumbnail image for an example file.
+- [Clone Template](https://documentation.datalab.to/api-reference/processor-templates/clone-template.md): Clone a template to the user's team as a new custom processor.
+- [Add Template Examples](https://documentation.datalab.to/api-reference/processor-templates/add-template-examples.md): Upload example files for a template. Admin-only.
+- [Check Pipeline Access](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/check-pipeline-access.md): Check if the current user's team has access to custom processors.
+- [Get Creation Allowance](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/get-creation-allowance.md): 2026 custom-processor CREATION allowance preview for the current team (§5).
+- [List Custom Pipelines](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/list-custom-pipelines.md): List all custom processors for a team. Returns processors ordered by creation date (newest first).
+- [Submit Custom Pipeline](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/submit-custom-pipeline.md): Submit a custom processor generation request.
+- [Get Custom Pipeline Status](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/get-custom-pipeline-status.md): Check the status of a custom processor generation request using the request_check_url from the initial submission.
+- [Transfer Custom Pipeline](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/transfer-custom-pipeline.md): Transfer a custom processor to another team. This endpoint allows admins to transfer ownership of a custom processor from one team to another. This is useful for: 1. Beta testing: Create and test processors internally, then transfer to customers 2. Sharing: Move successful processor configurations b…
+- [Archive Custom Pipeline](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/archive-custom-pipeline.md): Archive a custom processor (soft-delete). Available to any team member with pipeline access.
+- [Delete Custom Pipeline](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/delete-custom-pipeline.md): Permanently delete a custom processor and all its versions. Admin-only.
+- [Restore Custom Pipeline](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/restore-custom-pipeline.md): Restore an archived custom processor. Admin-only.
+- [Iterate Custom Pipeline](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/iterate-custom-pipeline.md): Iterate on an existing custom processor.
+- [List Pipeline Versions](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/list-pipeline-versions.md): List all versions of a custom processor, ordered by version descending.
+- [Get Processor Version Detail](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/get-processor-version-detail.md): Get detailed data for a specific processor version, including pipeline_params and eval_definition.
+- [Set Active Pipeline Version](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/set-active-pipeline-version.md): Set the active version of a custom processor. Changes the active_version pointer to any existing version.
+- [Get Pipelines Using Processor](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/get-pipelines-using-processor.md): List pipelines (from the Pipeline table) that reference this custom processor in their steps JSON.
+- [Seed Custom Pipeline](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/seed-custom-pipeline.md): Directly create a completed custom processor from JSON. Admin-only.
+- [Get Pipeline Eval Definition](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/get-pipeline-eval-definition.md): Get the eval_definition from a custom processor's active version.
+- [Update Pipeline Eval Definition](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/update-pipeline-eval-definition.md): Update the eval_definition on a custom processor's active version.
+- [Set Processor Eval Rubric](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/set-processor-eval-rubric.md): Link or detach an EvalRubric on a custom processor.
+- [Export Custom Pipeline](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/export-custom-pipeline.md): Export a custom processor with all versions. Admin-only.
+- [Describe Customizer](https://documentation.datalab.to/api-reference/custom-pipelines-deprecated/describe-customizer.md): Conversational endpoint for building a custom processor description. Accepts the chat history, returns the next assistant message. When the system has enough context, includes a proposed_description.
+- [List Templates](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/list-templates.md): List all published pipeline templates.
+- [Promote To Template](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/promote-to-template.md): Create a template by copying an existing completed processor. Admin-only.
+- [Get Template](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/get-template.md): Get detailed info for a pipeline template.
+- [Update Template](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/update-template.md): Update template metadata. Admin-only.
+- [Remove Template](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/remove-template.md): Un-template a pipeline (sets is_template=False). Admin-only.
+- [Download Template Example](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/download-template-example.md): Fetch example file from R2 and return content directly.
+- [Remove Template Example](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/remove-template-example.md): Remove an example file from a template. Admin-only.
+- [Download Template Example Thumbnail](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/download-template-example-thumbnail.md): Stream thumbnail image for an example file.
+- [Clone Template](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/clone-template.md): Clone a template to the user's team as a new custom processor.
+- [Add Template Examples](https://documentation.datalab.to/api-reference/pipeline-templates-deprecated/add-template-examples.md): Upload example files for a template. Admin-only.
+- [Request Upload Url](https://documentation.datalab.to/api-reference/files/request-upload-url.md): Request a presigned upload URL for direct client-side upload to storage.
+- [Confirm Upload](https://documentation.datalab.to/api-reference/files/confirm-upload.md): Confirm that a file was successfully uploaded to storage.
+- [Get File Metadata](https://documentation.datalab.to/api-reference/files/get-file-metadata.md): Get metadata for an uploaded file.
+- [Delete File](https://documentation.datalab.to/api-reference/files/delete-file.md): Delete an uploaded file.
+- [Get File Download Url](https://documentation.datalab.to/api-reference/files/get-file-download-url.md): Generate presigned URL for downloading a file.
+- [List Files](https://documentation.datalab.to/api-reference/files/list-files.md): List all uploaded files for the team.
+- [List Eval Rubrics](https://documentation.datalab.to/api-reference/eval_rubrics/list-eval-rubrics.md): List eval rubrics for the team.
+- [Create Eval Rubric](https://documentation.datalab.to/api-reference/eval_rubrics/create-eval-rubric.md): Create new eval rubric for the team.
+- [Get Eval Rubric](https://documentation.datalab.to/api-reference/eval_rubrics/get-eval-rubric.md): Get eval rubric by ID.
+- [Update Eval Rubric](https://documentation.datalab.to/api-reference/eval_rubrics/update-eval-rubric.md): Update eval rubric.
+- [Delete Eval Rubric](https://documentation.datalab.to/api-reference/eval_rubrics/delete-eval-rubric.md): Soft-delete (archive) eval rubric.
+- [Import From Pipeline](https://documentation.datalab.to/api-reference/eval_rubrics/import-from-pipeline.md): Import eval_definition from a custom pipeline's active version.
+- [Create From Feedback](https://documentation.datalab.to/api-reference/eval_rubrics/create-from-feedback.md): Convert user feedback items into structured eval rubric using LLM rewrite.
+- [Generate From Feedback](https://documentation.datalab.to/api-reference/eval_rubrics/generate-from-feedback.md): Generate eval rubric from feedback items using LLM rewrite (no DB save).
+- [Generate From Description](https://documentation.datalab.to/api-reference/eval_rubrics/generate-from-description.md): Generate a draft eval rubric from a plain-language quality description (no DB save).
+- [List Collections](https://documentation.datalab.to/api-reference/collections/list-collections.md): List collections for the team.
+- [Create Collection](https://documentation.datalab.to/api-reference/collections/create-collection.md): Create a new collection.
+- [List Collection S3 Statuses](https://documentation.datalab.to/api-reference/collections/list-collection-s3-statuses.md): List minimal S3 status for collection rows without source configuration.
+- [Get Collection](https://documentation.datalab.to/api-reference/collections/get-collection.md): Get collection summary and S3 sync status.
+- [Update Collection](https://documentation.datalab.to/api-reference/collections/update-collection.md): Update collection name/description.
+- [Delete Collection](https://documentation.datalab.to/api-reference/collections/delete-collection.md): Soft-delete (archive) collection.
+- [Get Collection S3 Source](https://documentation.datalab.to/api-reference/collections/get-collection-s3-source.md): Get redacted S3 source configuration and sync status for a collection.
+- [Upsert Collection S3 Source](https://documentation.datalab.to/api-reference/collections/upsert-collection-s3-source.md): Create or update a collection's S3 source and enqueue a sync.
+- [Delete Collection S3 Source](https://documentation.datalab.to/api-reference/collections/delete-collection-s3-source.md): Disconnect a collection's S3 source and remove its synthetic file rows.
+- [Upsert Collection S3 Output](https://documentation.datalab.to/api-reference/collections/upsert-collection-s3-output.md): Create or update a collection's S3 output writeback destination.
+- [Delete Collection S3 Output](https://documentation.datalab.to/api-reference/collections/delete-collection-s3-output.md): Disable a collection's S3 output writeback destination.
+- [Trigger Collection S3 Writeback](https://documentation.datalab.to/api-reference/collections/trigger-collection-s3-writeback.md): Enqueue S3 output writeback for the latest completed batch run.
+- [Trigger Collection S3 Sync](https://documentation.datalab.to/api-reference/collections/trigger-collection-s3-sync.md): Enqueue a resync for an existing collection S3 source.
+- [List Collection Files](https://documentation.datalab.to/api-reference/collections/list-collection-files.md): List collection files with cursor pagination.
+- [Add Files To Collection](https://documentation.datalab.to/api-reference/collections/add-files-to-collection.md): Link existing uploaded files to a collection.
+- [Remove File From Collection](https://documentation.datalab.to/api-reference/collections/remove-file-from-collection.md): Unlink a file from a collection (does NOT delete the uploaded file).
+- [List Batch Runs](https://documentation.datalab.to/api-reference/collections/list-batch-runs.md): List batch runs for the team, optionally filtered by collection, eval rubric, and/or pipeline.
+- [Start Batch Run](https://documentation.datalab.to/api-reference/collections/start-batch-run.md): Start a batch evaluation run on all files in the collection.
+- [Get Eval Results Trend](https://documentation.datalab.to/api-reference/collections/get-eval-results-trend.md): Eval score trend from the evalresult fact table — one series per (source step, rubric), one point per scored execution, across EVERY path that scores (workspace runs, API runs with run_evals, batch runs, and later policy sampling).
+- [Get Batch Run](https://documentation.datalab.to/api-reference/collections/get-batch-run.md): Get batch run status and progress.
+- [Get Batch Run Results](https://documentation.datalab.to/api-reference/collections/get-batch-run-results.md): Get per-file results for a batch run.
+- [List Pipelines](https://documentation.datalab.to/api-reference/pipelines/list-pipelines.md): List pipelines for the team.
+- [Create Pipeline](https://documentation.datalab.to/api-reference/pipelines/create-pipeline.md): Create a new pipeline for the team.
+- [Get Pipeline Execution](https://documentation.datalab.to/api-reference/pipelines/get-pipeline-execution.md): Poll execution status. Returns per-step status with lookup keys for partial results.
+- [Get Step Result](https://documentation.datalab.to/api-reference/pipelines/get-step-result.md): Fetch intermediate result for a specific pipeline execution step.
+- [Get Pipeline](https://documentation.datalab.to/api-reference/pipelines/get-pipeline.md): Get pipeline by pipeline_id.
+- [Update Pipeline](https://documentation.datalab.to/api-reference/pipelines/update-pipeline.md): Update pipeline steps. This is the auto-save path.
+- [Save Pipeline](https://documentation.datalab.to/api-reference/pipelines/save-pipeline.md): Name and promote a pipeline to saved status.
+- [Archive Pipeline](https://documentation.datalab.to/api-reference/pipelines/archive-pipeline.md): Archive a pipeline, hiding it from the default list.
+- [Unarchive Pipeline](https://documentation.datalab.to/api-reference/pipelines/unarchive-pipeline.md): Unarchive a pipeline, restoring it to the default list.
+- [List Pipeline Versions](https://documentation.datalab.to/api-reference/pipelines/list-pipeline-versions.md): List all versions of a pipeline, newest first.
+- [Create Pipeline Version](https://documentation.datalab.to/api-reference/pipelines/create-pipeline-version.md): Create a new version snapshot of the pipeline's current steps.
+- [Discard Draft](https://documentation.datalab.to/api-reference/pipelines/discard-draft.md): Discard draft changes and reset Pipeline.steps to a published version's steps.
+- [Get Pipeline Rate](https://documentation.datalab.to/api-reference/pipelines/get-pipeline-rate.md): Get the pipeline rate based on plan and effective processing region.
+- [Quote Parse Config](https://documentation.datalab.to/api-reference/pipelines/quote-parse-config.md): Quote an AD-HOC convert config (no saved pipeline) — the authenticated playground's run receipt (F1 of the config-panel work).
+- [Run Pipeline](https://documentation.datalab.to/api-reference/pipelines/run-pipeline.md): Execute a pipeline on a file, creating an execution DAG with per-step tracking and billing.
+- [List Pipeline Executions](https://documentation.datalab.to/api-reference/pipelines/list-pipeline-executions.md): List recent executions for a pipeline.
+- [List Processors](https://documentation.datalab.to/api-reference/agent-studio/list-processors.md): Platform processors + the team's own, with latest version, run counts (split by plane), the windowed pass_rate, and the caller's proactive ``design_access`` capability flag (closed-beta allowlist).
+- [Get Processor](https://documentation.datalab.to/api-reference/agent-studio/get-processor.md): One processor with its full version history (oldest first).
+- [Rename Processor](https://documentation.datalab.to/api-reference/agent-studio/rename-processor.md): Rename a TEAM processor (W5 naming): ``{"name": str}`` is the whole body — the name is the only mutable field (drafts and published versions alike; version contracts are untouched).
+- [List Processor Runs](https://documentation.datalab.to/api-reference/agent-studio/list-processor-runs.md): The team's runs of this processor, newest first (version-groupable: each run carries its pinned version label; plane-filterable).
+- [Launch Processor Run](https://documentation.datalab.to/api-reference/agent-studio/launch-processor-run.md): Launch an execution-plane run of this processor's newest PUBLISHED version over an uploaded document — the processor page's "New run".
+- [Get Run](https://documentation.datalab.to/api-reference/agent-studio/get-run.md): RunCard-shaped detail: status, scorecard, check results with locators, error kind/message.
+- [Get Run Review](https://documentation.datalab.to/api-reference/agent-studio/get-run-review.md): The full-review manifest (plan A5): source pages via the EXISTING thumbnail endpoint, the per-shape result payloads (INLINE from the run's own stored result — no artifact or intermediates listing, so no workspace path reaches a client), and the projected trace.
+- [Tail Run Trace](https://documentation.datalab.to/api-reference/agent-studio/tail-run-trace.md): Live-tail (plan A6): projected trace steps appended since ``cursor``. Cheap polling — one ranged R2 read per call against the mid-run mirrored trace object; ``done`` flips when the run row is terminal (keep polling until done AND an empty batch, so the final flush is never missed).
+- [Get Run File](https://documentation.datalab.to/api-reference/agent-studio/get-run-file.md): Authenticated proxy for the ONE lazily-loaded piece of the review: spilled sheet-block HTML.
+- [List Flags](https://documentation.datalab.to/api-reference/agent-studio/list-flags.md): The team's flags, newest first; optionally scoped to one processor.
+- [Create Flag](https://documentation.datalab.to/api-reference/agent-studio/create-flag.md): Flag a run finding (run review / drawer). The locator is validated against the spec §3 grammar; surface.number is 0-indexed here.
+- [List Sessions](https://documentation.datalab.to/api-reference/agent-studio/list-sessions.md): The team's design sessions, newest first.
+- [Create Session](https://documentation.datalab.to/api-reference/agent-studio/create-session.md): Start a design session: from a template, reopened on a processor (optionally seeded with a flag's context — R6), or BLANK when neither is given — an empty draft the brain grounds from the first message/doc.
+- [Get Session Snapshot](https://documentation.datalab.to/api-reference/agent-studio/get-session-snapshot.md): The whole session view-model in one poll: state (draft, pending, docs, versions, jobs) + the events past the cursor.
+- [Post Message](https://documentation.datalab.to/api-reference/agent-studio/post-message.md): Append a user message and tick the brain.
+- [Post Answer](https://documentation.datalab.to/api-reference/agent-studio/post-answer.md): Answer the pending question (option pick or free text).
+- [Accept Diff](https://documentation.datalab.to/api-reference/agent-studio/accept-diff.md): Apply the pending proposal to the draft. Stale ids are idempotent no-ops with a gentle note (S3).
+- [Reject Diff](https://documentation.datalab.to/api-reference/agent-studio/reject-diff.md): Clear the pending proposal without applying it.
+- [Edit Draft](https://documentation.datalab.to/api-reference/agent-studio/edit-draft.md): Direct draft edit (frontend editGoal/editRule/editSchema/ toggleCheckBlocking — S2): applies immediately, appends a user ``artifact_edit`` event, and ticks the brain. It NEVER consumes the pending question/diff card — direct edits and card decisions are independent.
+- [Commit Session](https://documentation.datalab.to/api-reference/agent-studio/commit-session.md): Snapshot the draft into a committed 0.x version and re-exercise the reference set against it. (Versions are normally agent-managed — the brain commits via its own action; this is the direct path.)
+- [Publish Session](https://documentation.datalab.to/api-reference/agent-studio/publish-session.md): Promote the latest committed version to published (1.x) and return the API address. Gated on the green board (no in-flight or failing runs pinned to the candidate).
+- [Upload Docs](https://documentation.datalab.to/api-reference/agent-studio/upload-docs.md): Attach reference documents to the session, reusing the /agent intake validation (PDF/image direct; office/HTML/EPUB staged to PDF at upload when LibreOffice is available — otherwise the run-time pipeline converts; spreadsheets stored NATIVELY on the sheet path — doc_kind='sheet', page_count counts s…
+- [Set Doc Role](https://documentation.datalab.to/api-reference/agent-studio/set-doc-role.md): Flip one reference doc between 'process' and 'context' (D1 doc roles — the chip toggle). Text docs are role-LOCKED to context (400). A same-role PATCH is an idempotent no-op (200, no event). A real flip appends a USER-actor activity event (consumable — the brain learns and reacts) and ticks the sess…
+- [List Extraction Schemas](https://documentation.datalab.to/api-reference/extraction_schemas/list-extraction-schemas.md): List extraction schemas for the team.
+- [Create Extraction Schema](https://documentation.datalab.to/api-reference/extraction_schemas/create-extraction-schema.md): Create a new extraction schema for the team.
+- [Get Extraction Schema](https://documentation.datalab.to/api-reference/extraction_schemas/get-extraction-schema.md): Get extraction schema by ID.
+- [Update Extraction Schema](https://documentation.datalab.to/api-reference/extraction_schemas/update-extraction-schema.md): Update extraction schema. Optionally create a new version.
+- [Delete Extraction Schema](https://documentation.datalab.to/api-reference/extraction_schemas/delete-extraction-schema.md): Soft-delete (archive) extraction schema.
+
+## OpenAPI Specs
+
+- [openapi](/api-reference/openapi.json)
+- [openapi](https://www.datalab.to/openapi.json)
+
+## Optional
+
+- [Try Datalab for Free](https://www.datalab.to/auth/sign_up)
+- [Blog](https://www.datalab.to/blog)
+- [API Reference](https://documentation.datalab.to/api-reference/health)
