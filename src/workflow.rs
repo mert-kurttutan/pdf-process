@@ -23,7 +23,7 @@ pub enum WorkflowError {
     Io(#[from] std::io::Error),
     #[error("could not serialize Datalab metadata: {0}")]
     Json(#[from] serde_json::Error),
-    #[error("output path already exists: {0}")]
+    #[error("output path is occupied: {0}")]
     OutputExists(PathBuf),
 }
 
@@ -74,9 +74,12 @@ pub fn convert_pdf(
 ) -> Result<WorkflowOutput, WorkflowError> {
     let target_dir = output_directory(input_pdf, options.output_dir.as_deref());
     if target_dir.exists() {
-        return Err(WorkflowError::OutputExists(target_dir));
+        if !target_dir.is_dir() || fs::read_dir(&target_dir)?.next().is_some() {
+            return Err(WorkflowError::OutputExists(target_dir));
+        }
+    } else {
+        fs::create_dir(&target_dir)?;
     }
-    fs::create_dir(&target_dir)?;
     let datalab_options = DatalabOptions {
         api_key: options.api_key.clone(),
         mode: options.mode.clone(),

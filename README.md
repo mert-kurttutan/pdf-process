@@ -82,7 +82,7 @@ cargo run -- html assets/paper.pdf
 ```
 
 This writes all artifacts under `assets/paper.out/`. The command fails if
-that directory already exists.
+that path is a file or the directory is not empty.
 
 Choose a different parent output directory:
 
