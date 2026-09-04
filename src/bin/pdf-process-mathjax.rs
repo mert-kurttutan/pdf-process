@@ -1,4 +1,4 @@
-use std::{path::PathBuf, process::ExitCode};
+use std::path::PathBuf;
 
 use clap::Parser;
 use pdf_process::mathjax_preview::write_mathjax_preview;
@@ -16,16 +16,9 @@ struct Args {
     output: Option<PathBuf>,
 }
 
-fn main() -> ExitCode {
+fn main() -> Result<(), pdf_process::mathjax_preview::MathJaxError> {
     let args = Args::parse();
-    match write_mathjax_preview(&args.input_html, args.output.as_deref()) {
-        Ok(output) => {
-            println!("MathJax HTML: {}", output.display());
-            ExitCode::SUCCESS
-        }
-        Err(error) => {
-            eprintln!("error: {error}");
-            ExitCode::FAILURE
-        }
-    }
+    let output = write_mathjax_preview(&args.input_html, args.output.as_deref())?;
+    println!("MathJax HTML: {}", output.display());
+    Ok(())
 }

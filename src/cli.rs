@@ -1,8 +1,8 @@
-use std::{path::PathBuf, process::ExitCode, time::Duration};
+use std::{path::PathBuf, time::Duration};
 
-use clap::Parser;
+use clap::{ArgAction, Parser};
 
-use crate::workflow::{WorkflowOptions, convert_pdf};
+use crate::workflow::{WorkflowError, WorkflowOptions, convert_pdf};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -24,8 +24,8 @@ pub struct ConvertArgs {
     /// Also generate a Typst file from the returned HTML.
     #[arg(long)]
     pub typst: bool,
-    /// Also generate a `.mathjax.html` browser preview with `MathJax` rendering.
-    #[arg(long, default_value_t = true)]
+    /// Do not generate the `.mathjax.html` browser preview.
+    #[arg(long = "no-mathjax-preview", action = ArgAction::SetFalse, default_value_t = true)]
     pub mathjax_preview: bool,
     /// Do not save Datalab metadata JSON next to the output.
     #[arg(long)]
@@ -50,7 +50,7 @@ fn positive_seconds(value: &str) -> Result<f64, String> {
 }
 
 #[must_use]
-pub fn run() -> ExitCode {
+pub fn run() -> Result<(), WorkflowError> {
     let args = ConvertArgs::parse();
     let options = WorkflowOptions {
         api_key: args.api_key,
@@ -62,23 +62,36 @@ pub fn run() -> ExitCode {
         poll_interval: Duration::from_secs_f64(args.poll_interval),
         timeout: Duration::from_secs_f64(args.timeout),
     };
-    match convert_pdf(&args.input_pdf, &options) {
-        Ok(output) => {
-            println!("HTML: {}", output.html_path.display());
-            if let Some(path) = output.mathjax_html_path {
-                println!("MathJax HTML: {}", path.display());
-            }
-            if let Some(path) = output.typst_path {
-                println!("Typst: {}", path.display());
-            }
-            if let Some(path) = output.metadata_path {
-                println!("Metadata: {}", path.display());
-            }
-            ExitCode::SUCCESS
-        }
-        Err(error) => {
-            eprintln!("error: {error}");
-            ExitCode::FAILURE
-        }
+    let output = convert_pdf(&args.input_pdf, &options)?;
+    println!("HTML: {}", output.html_path.display());
+    if let Some(path) = output.mathjax_html_path {
+        println!("MathJax HTML: {}", path.display());
+    }
+    if let Some(path) = output.typst_path {
+        println!("Typst: {}", path.display());
+    }
+    if let Some(path) = output.metadata_path {
+        println!("Metadata: {}", path.display());
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::ConvertArgs;
+    use clap::Parser;
+
+    #[test]
+    fn mathjax_preview_is_enabled_by_default() {
+        let args = ConvertArgs::try_parse_from(["pdf-process", "document.pdf"]).unwrap();
+        assert!(args.mathjax_preview);
+    }
+
+    #[test]
+    fn mathjax_preview_can_be_disabled() {
+        let args =
+            ConvertArgs::try_parse_from(["pdf-process", "document.pdf", "--no-mathjax-preview"])
+                .unwrap();
+        assert!(!args.mathjax_preview);
     }
 }

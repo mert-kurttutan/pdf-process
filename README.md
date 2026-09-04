@@ -61,6 +61,12 @@ MathJax browser preview generation is enabled by default:
 cargo run -- assets/paper.pdf
 ```
 
+Disable the MathJax browser preview when needed:
+
+```sh
+cargo run -- assets/paper.pdf --no-mathjax-preview
+```
+
 Create a MathJax preview from an existing HTML file without re-calling Datalab:
 
 ```sh
