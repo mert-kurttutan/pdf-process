@@ -33,20 +33,21 @@ Convert a whole PDF to HTML and save it beside the PDF:
 
 ```sh
 export DATALAB_API_KEY=...
-cargo run -- assets/paper.pdf
+cargo run -- html assets/paper.pdf
 ```
 
 This writes:
 
 ```text
 assets/paper.html
+assets/paper.mathjax.html
 assets/paper.datalab.json
 ```
 
 Also generate Typst from the returned HTML:
 
 ```sh
-cargo run -- assets/paper.pdf --typst
+cargo run -- html assets/paper.pdf --typst
 ```
 
 This also writes:
@@ -58,37 +59,25 @@ assets/paper.typ
 MathJax browser preview generation is enabled by default:
 
 ```sh
-cargo run -- assets/paper.pdf
+cargo run -- html assets/paper.pdf
 ```
 
 Disable the MathJax browser preview when needed:
 
 ```sh
-cargo run -- assets/paper.pdf --no-mathjax-preview
-```
-
-Create a MathJax preview from an existing HTML file without re-calling Datalab:
-
-```sh
-cargo run --bin pdf-process-mathjax -- assets/paper.html
-```
-
-This writes:
-
-```text
-assets/paper.mathjax.html
+cargo run -- html assets/paper.pdf --no-mathjax-preview
 ```
 
 Choose a Datalab mode:
 
 ```sh
-cargo run -- assets/paper.pdf --mode balanced
+cargo run -- html assets/paper.pdf --mode balanced
 ```
 
 Use a different output directory:
 
 ```sh
-cargo run -- assets/paper.pdf --output-dir out/paper
+cargo run -- html assets/paper.pdf --output-dir out/paper
 ```
 
 ## Math And Typst

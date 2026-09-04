@@ -1,15 +1,27 @@
 use std::{path::PathBuf, time::Duration};
 
-use clap::{ArgAction, Parser};
+use clap::{ArgAction, Parser, Subcommand};
 
 use crate::workflow::{WorkflowError, WorkflowOptions, convert_pdf};
 
 #[derive(Debug, Parser)]
 #[command(
     name = "pdf-process",
-    about = "Convert a whole PDF to Datalab HTML and optionally derive Typst."
+    about = "Process documents through the Datalab API."
 )]
-pub struct ConvertArgs {
+pub struct Cli {
+    #[command(subcommand)]
+    pub command: Commands,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum Commands {
+    /// Convert a whole PDF to Datalab HTML and optionally derive Typst.
+    Html(HtmlArgs),
+}
+
+#[derive(Debug, clap::Args)]
+pub struct HtmlArgs {
     /// Path to the input PDF file.
     pub input_pdf: PathBuf,
     /// Datalab API key. Defaults to `DATALAB_API_KEY`.
@@ -51,7 +63,9 @@ fn positive_seconds(value: &str) -> Result<f64, String> {
 
 #[must_use]
 pub fn run() -> Result<(), WorkflowError> {
-    let args = ConvertArgs::parse();
+    let Cli {
+        command: Commands::Html(args),
+    } = Cli::parse();
     let options = WorkflowOptions {
         api_key: args.api_key,
         mode: args.mode,
@@ -78,20 +92,28 @@ pub fn run() -> Result<(), WorkflowError> {
 
 #[cfg(test)]
 mod tests {
-    use super::ConvertArgs;
+    use super::{Cli, Commands};
     use clap::Parser;
 
     #[test]
     fn mathjax_preview_is_enabled_by_default() {
-        let args = ConvertArgs::try_parse_from(["pdf-process", "document.pdf"]).unwrap();
+        let Cli {
+            command: Commands::Html(args),
+        } = Cli::try_parse_from(["pdf-process", "html", "document.pdf"]).unwrap();
         assert!(args.mathjax_preview);
     }
 
     #[test]
     fn mathjax_preview_can_be_disabled() {
-        let args =
-            ConvertArgs::try_parse_from(["pdf-process", "document.pdf", "--no-mathjax-preview"])
-                .unwrap();
+        let Cli {
+            command: Commands::Html(args),
+        } = Cli::try_parse_from([
+            "pdf-process",
+            "html",
+            "document.pdf",
+            "--no-mathjax-preview",
+        ])
+        .unwrap();
         assert!(!args.mathjax_preview);
     }
 }

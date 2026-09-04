@@ -12,14 +12,6 @@ default-run = "pdf-process"
 name = "pdf-process"
 path = "src/main.rs"
 
-[[bin]]
-name = "pdf2html"
-path = "src/bin/pdf2html.rs"
-
-[[bin]]
-name = "pdf-process-mathjax"
-path = "src/bin/pdf-process-mathjax.rs"
-
 [dependencies]
 base64 = "0.22.1"
 clap = { version = "4.6.1", features = ["derive"] }
