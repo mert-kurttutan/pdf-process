@@ -1,7 +1,7 @@
 # pdf-process
 
-Convert PDFs into HTML through the Datalab Convert API, then optionally generate
-equivalent Typst from the returned HTML.
+A Rust CLI that converts PDFs into HTML through the Datalab Convert API, then
+optionally generates equivalent Typst from the returned HTML.
 
 The primary workflow is:
 
@@ -12,15 +12,14 @@ The primary workflow is:
 
 ## Requirements
 
-- Python `>=3.10,<4.0`
-- `uv`
+- Rust `>=1.85` and Cargo
 - Datalab API key in `DATALAB_API_KEY`
 - Optional: `typst` CLI if you want to compile generated `.typ` files
 
 ## Install
 
 ```sh
-uv sync --group dev
+nix develop -c cargo build
 ```
 
 ## Usage
@@ -29,7 +28,7 @@ Convert a whole PDF to HTML and save it beside the PDF:
 
 ```sh
 export DATALAB_API_KEY=...
-uv run pdf-process assets/paper.pdf
+cargo run -- assets/paper.pdf
 ```
 
 This writes:
@@ -42,7 +41,7 @@ assets/paper.datalab.json
 Also generate Typst from the returned HTML:
 
 ```sh
-uv run pdf-process assets/paper.pdf --typst
+cargo run -- assets/paper.pdf --typst
 ```
 
 This also writes:
@@ -54,13 +53,13 @@ assets/paper.typ
 Also create a MathJax browser preview:
 
 ```sh
-uv run pdf-process assets/paper.pdf --mathjax-preview
+cargo run -- assets/paper.pdf --mathjax-preview
 ```
 
 Create a MathJax preview from an existing HTML file without re-calling Datalab:
 
 ```sh
-uv run pdf-process-mathjax assets/paper.html
+cargo run --bin pdf-process-mathjax -- assets/paper.html
 ```
 
 This writes:
@@ -72,13 +71,13 @@ assets/paper.mathjax.html
 Choose a Datalab mode:
 
 ```sh
-uv run pdf-process assets/paper.pdf --mode balanced
+cargo run -- assets/paper.pdf --mode balanced
 ```
 
 Use a different output directory:
 
 ```sh
-uv run pdf-process assets/paper.pdf --output-dir out/paper
+cargo run -- assets/paper.pdf --output-dir out/paper
 ```
 
 ## Math And Typst
@@ -94,6 +93,11 @@ calling Datalab differently. The source of truth remains the returned HTML.
 ## Development
 
 ```sh
-uv run ruff check
-uv run pytest
+nix develop -c cargo fmt --check
+nix develop -c cargo clippy --all-targets --all-features -- -D warnings
+nix develop -c cargo test
 ```
+
+The Nix development shell supplies Rust, Cargo, Clippy, Rustfmt, a C toolchain,
+and the optional Typst compiler. Enter it interactively with `nix develop`, or
+run a one-off command with `nix develop -c <command>`.
