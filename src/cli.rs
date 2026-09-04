@@ -25,7 +25,7 @@ pub struct ConvertArgs {
     #[arg(long)]
     pub typst: bool,
     /// Also generate a `.mathjax.html` browser preview with `MathJax` rendering.
-    #[arg(long)]
+    #[arg(long, default_value_t = true)]
     pub mathjax_preview: bool,
     /// Do not save Datalab metadata JSON next to the output.
     #[arg(long)]

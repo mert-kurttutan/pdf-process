@@ -1,5 +1,5 @@
 use std::{
-    env, fs,
+    fs,
     path::{Component, Path, PathBuf},
     thread,
     time::{Duration, Instant},
@@ -34,6 +34,8 @@ pub enum DatalabError {
     Json(#[from] serde_json::Error),
     #[error("Datalab conversion failed: {0}")]
     Api(String),
+    #[error("could not load configuration: {0}")]
+    Config(#[from] crate::utils::ConfigError),
     #[error("Datalab response did not include a result check URL")]
     MissingCheckUrl,
     #[error("Datalab conversion completed without HTML output")]
@@ -96,10 +98,11 @@ pub fn convert_pdf_to_html(
         return Err(DatalabError::InvalidTiming);
     }
 
+    let config = crate::utils::load_config()?;
     let api_key = options
         .api_key
         .clone()
-        .or_else(|| env::var("DATALAB_API_KEY").ok())
+        .or_else(|| config.get("DATALAB_API_KEY").cloned())
         .filter(|key| !key.trim().is_empty())
         .ok_or(DatalabError::MissingApiKey)?;
     let file_name = input_pdf

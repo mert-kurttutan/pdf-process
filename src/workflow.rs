@@ -43,7 +43,7 @@ impl Default for WorkflowOptions {
             api_key: None,
             mode: "accurate".to_owned(),
             typst: false,
-            mathjax_preview: false,
+            mathjax_preview: true,
             output_dir: None,
             save_metadata: true,
             poll_interval: Duration::from_secs(2),
@@ -158,6 +158,7 @@ mod tests {
         assert_eq!(options.mode, "accurate");
         assert!(options.save_metadata);
         assert!(!options.typst);
+        assert!(options.mathjax_preview);
     }
 
     #[test]

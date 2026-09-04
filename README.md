@@ -13,7 +13,8 @@ The primary workflow is:
 ## Requirements
 
 - Rust `>=1.85` and Cargo
-- Datalab API key in `DATALAB_API_KEY`
+- Datalab API key in `DATALAB_API_KEY`, either as a process environment
+  variable or in a `.env` file in the working directory
 - Optional: `typst` CLI if you want to compile generated `.typ` files
 
 ## Install
@@ -23,6 +24,10 @@ nix develop -c cargo build
 ```
 
 ## Usage
+
+Configuration is loaded into a shared key-value map by `utils`. Values from
+`.env` provide defaults, while process environment variables take precedence.
+An explicit `--api-key` takes precedence over both.
 
 Convert a whole PDF to HTML and save it beside the PDF:
 
@@ -50,10 +55,10 @@ This also writes:
 assets/paper.typ
 ```
 
-Also create a MathJax browser preview:
+MathJax browser preview generation is enabled by default:
 
 ```sh
-cargo run -- assets/paper.pdf --mathjax-preview
+cargo run -- assets/paper.pdf
 ```
 
 Create a MathJax preview from an existing HTML file without re-calling Datalab:
