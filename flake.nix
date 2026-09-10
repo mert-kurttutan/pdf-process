@@ -2,7 +2,7 @@
   description = "Development environment for the pdf-process Rust CLI";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     typst-nix = {
       url = "github:mert-kurttutan/typst-nix";
       inputs.nixpkgs.follows = "nixpkgs";
