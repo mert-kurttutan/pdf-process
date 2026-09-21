@@ -327,7 +327,17 @@ fn save_images(output_dir: &Path, images: Option<&Value>) -> Result<(), DatalabE
         let bytes = BASE64
             .decode(encoded)
             .map_err(|_| DatalabError::InvalidImage(name.clone()))?;
-        fs::write(image_path, bytes)?;
+        let temporary_path = image_path.with_extension(format!(
+            "{}partial-{}",
+            image_path
+                .extension()
+                .map_or_else(String::new, |extension| {
+                    format!("{}.", extension.to_string_lossy())
+                }),
+            std::process::id()
+        ));
+        fs::write(&temporary_path, bytes)?;
+        fs::rename(temporary_path, image_path)?;
     }
     Ok(())
 }
