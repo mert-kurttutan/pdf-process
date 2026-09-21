@@ -19,6 +19,11 @@ pub enum ConfigError {
 ///
 /// A missing `.env` file is allowed. Values from the process environment
 /// override values loaded from `.env`.
+///
+/// # Errors
+///
+/// Returns an error when `.env` exists but cannot be read or contains an
+/// invalid entry.
 pub fn load_config() -> Result<HashMap<String, String>, ConfigError> {
     load_config_from(Path::new(".env"), env::vars())
 }

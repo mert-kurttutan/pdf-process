@@ -7,8 +7,8 @@ The primary workflow is:
 
 1. Send the whole PDF to Datalab `/api/v1/convert` with `output_format=html`.
 2. Poll the Datalab result endpoint until conversion completes.
-3. Save the returned HTML next to the source PDF, typically under `assets/`.
-4. If requested, convert that saved HTML into a `.typ` file next to the PDF.
+3. Save the returned HTML and extracted images in the local cache.
+4. If requested, convert that saved HTML into a `.typ` artifact.
 
 ## Requirements
 
@@ -36,12 +36,12 @@ export DATALAB_API_KEY=...
 cargo run -- html assets/paper.pdf
 ```
 
-This writes:
+This writes under the cache's artifact directory:
 
 ```text
-assets/paper.html
-assets/paper.mathjax.html
-assets/paper.datalab.json
+<cache>/<cache-key>/artifacts/paper.html
+<cache>/<cache-key>/artifacts/paper.mathjax.html
+<cache>/<cache-key>/artifacts/paper.datalab.json
 ```
 
 Also generate Typst from the returned HTML:
@@ -53,7 +53,7 @@ cargo run -- html assets/paper.pdf --typst
 This also writes:
 
 ```text
-assets/paper.typ
+<cache>/<cache-key>/artifacts/paper.typ
 ```
 
 MathJax browser preview generation is enabled by default:
@@ -74,23 +74,18 @@ Choose a Datalab mode:
 cargo run -- html assets/paper.pdf --mode balanced
 ```
 
-Generated files are placed in a directory named `<stem>.out`, beside the input
-PDF by default:
+Artifacts are stored in a local content-addressed cache and reused when the
+PDF and conversion options match:
 
 ```sh
 cargo run -- html assets/paper.pdf
 ```
 
-This writes all artifacts under `assets/paper.out/`. The command fails if
-that path is a file or the directory is not empty.
-
-Choose a different parent output directory:
-
-```sh
-cargo run -- html assets/paper.pdf --output-dir out
-```
-
-This writes all artifacts under `out/paper.out/`.
+Use `--force` to bypass a matching cache entry, `--cache-dir` to choose the
+cache location. By default, the cache is stored in the operating system's
+per-user cache directory. The command reports whether the result was cached
+and prints paths for HTML, extracted PNGs, MathJax HTML, Typst, and metadata.
+See [docs/cache.md](docs/cache.md) for the cache layout and hashing details.
 
 ## Math And Typst
 

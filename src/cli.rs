@@ -21,15 +21,19 @@ pub enum Commands {
 }
 
 #[derive(Debug, clap::Args)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct HtmlArgs {
     /// Path to the input PDF file.
     pub input_pdf: PathBuf,
     /// Datalab API key. Defaults to `DATALAB_API_KEY`.
     #[arg(long)]
     pub api_key: Option<String>,
-    /// Parent directory for generated document output directories.
+    /// Directory containing the local conversion cache.
     #[arg(long)]
-    pub output_dir: Option<PathBuf>,
+    pub cache_dir: Option<PathBuf>,
+    /// Ignore a matching cache entry and perform a fresh conversion.
+    #[arg(long)]
+    pub force: bool,
     /// Datalab conversion mode for the whole PDF.
     #[arg(long, value_parser = ["fast", "balanced", "accurate"], default_value = "accurate")]
     pub mode: String,
@@ -61,14 +65,17 @@ fn positive_seconds(value: &str) -> Result<f64, String> {
     }
 }
 
-#[must_use]
+/// # Errors
+///
+/// Returns an error when argument parsing or PDF processing fails.
 pub fn run() -> Result<(), WorkflowError> {
     let Cli {
         command: Commands::Html(args),
     } = Cli::parse();
     let options = WorkflowOptions {
         api_key: args.api_key,
-        output_dir: args.output_dir,
+        cache_dir: args.cache_dir,
+        force: args.force,
         mode: args.mode,
         typst: args.typst,
         mathjax_preview: args.mathjax_preview,
@@ -77,7 +84,12 @@ pub fn run() -> Result<(), WorkflowError> {
         timeout: Duration::from_secs_f64(args.timeout),
     };
     let output = convert_pdf(&args.input_pdf, &options)?;
+    println!("Artifacts: {}", output.artifact_dir.display());
+    println!("Cache: {}", if output.cached { "hit" } else { "miss" });
     println!("HTML: {}", output.html_path.display());
+    for path in output.image_paths {
+        println!("Image: {}", path.display());
+    }
     if let Some(path) = output.mathjax_html_path {
         println!("MathJax HTML: {}", path.display());
     }
