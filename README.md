@@ -1,21 +1,18 @@
 # pdf-process
 
-A Rust CLI that converts PDFs into HTML through the Datalab Convert API, then
-optionally generates equivalent Typst from the returned HTML.
+A Rust CLI that converts PDFs into HTML through the Datalab Convert API.
 
 The primary workflow is:
 
 1. Send the whole PDF to Datalab `/api/v1/convert` with `output_format=html`.
 2. Poll the Datalab result endpoint until conversion completes.
 3. Save the returned HTML and extracted images in a `<stem>.out` directory.
-4. If requested, convert that saved HTML into a `.typ` artifact.
 
 ## Requirements
 
 - Rust `>=1.85` and Cargo
 - Datalab API key in `DATALAB_API_KEY`, either as a process environment
   variable or in a `.env` file in the working directory
-- Optional: `typst` CLI if you want to compile generated `.typ` files
 
 ## Install
 
@@ -44,18 +41,6 @@ assets/paper.out/paper.mathjax.html
 assets/paper.out/paper.datalab.json
 ```
 
-Also generate Typst from the returned HTML:
-
-```sh
-cargo run -- html assets/paper.pdf --typst
-```
-
-This also writes:
-
-```text
-assets/paper.out/paper.typ
-```
-
 Also request Datalab's block-level JSON in the same conversion:
 
 ```sh
@@ -64,8 +49,7 @@ cargo run -- html assets/paper.pdf --json
 
 This also writes `assets/paper.out/paper.json`. It contains Datalab's document
 block tree, including block types and bounding boxes. The separate
-`paper.datalab.json` file contains conversion metadata. `--json` can be combined
-with `--typst`.
+`paper.datalab.json` file contains conversion metadata.
 
 MathJax browser preview generation is enabled by default:
 
@@ -100,7 +84,7 @@ cargo run -- html assets/paper.pdf
 Use `--cache-dir` to choose the cache location. By default, the cache is stored
 in the operating system's per-user cache directory. The command reports whether
 the result was cached and prints paths for HTML, extracted PNGs, MathJax HTML,
-Typst, and metadata.
+and metadata.
 See [docs/cache.md](docs/cache.md) for the cache layout and hashing details.
 
 Remove all cached conversions and incomplete cache files:
@@ -112,15 +96,11 @@ pdf-process cache clean
 Pass `--cache-dir /path/to/pdf-cache` to clean a custom cache directory. This
 removes the cache directory itself; `.out/` artifact directories are unaffected.
 
-## Math And Typst
+## Math
 
 Datalab performs the PDF-to-HTML conversion, including math-oriented parsing
-when its model detects formulas. The Typst step is deliberately downstream from
-HTML: it reads the returned HTML and maps headings, paragraphs, lists, simple
-tables, emphasis, and elements with `class="math"` into Typst syntax.
-
-For higher-fidelity Typst output, improve the HTML-to-Typst mapper rather than
-calling Datalab differently. The source of truth remains the returned HTML.
+when its model detects formulas. The returned HTML remains the source of truth
+for equations, and the default MathJax preview renders them in a browser.
 
 ## Development
 
@@ -130,6 +110,6 @@ nix develop -c cargo clippy --all-targets --all-features -- -D warnings
 nix develop -c cargo test
 ```
 
-The Nix development shell supplies Rust, Cargo, Clippy, Rustfmt, a C toolchain,
-and the optional Typst compiler. Enter it interactively with `nix develop`, or
+The Nix development shell supplies Rust, Cargo, Clippy, Rustfmt, and a C
+toolchain. Enter it interactively with `nix develop`, or
 run a one-off command with `nix develop -c <command>`.

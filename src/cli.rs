@@ -16,7 +16,7 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-    /// Convert a whole PDF to Datalab HTML and optionally derive Typst.
+    /// Convert a whole PDF to Datalab HTML.
     Html(HtmlArgs),
     /// Manage cached conversions.
     Cache(CacheArgs),
@@ -61,9 +61,6 @@ pub struct HtmlArgs {
     /// Datalab conversion mode for the whole PDF.
     #[arg(long, value_parser = ["fast", "balanced", "accurate"], default_value = "accurate")]
     pub mode: String,
-    /// Also generate a Typst file from the returned HTML.
-    #[arg(long)]
-    pub typst: bool,
     /// Also save Datalab's block-level JSON output.
     #[arg(long)]
     pub json: bool,
@@ -115,7 +112,6 @@ fn run_html(args: HtmlArgs) -> Result<(), WorkflowError> {
         cache_dir: args.cache_dir,
         force: args.force,
         mode: args.mode,
-        typst: args.typst,
         json: args.json,
         mathjax_preview: args.mathjax_preview,
         save_metadata: !args.no_metadata,
@@ -131,9 +127,6 @@ fn run_html(args: HtmlArgs) -> Result<(), WorkflowError> {
     }
     if let Some(path) = output.mathjax_html_path {
         println!("MathJax HTML: {}", path.display());
-    }
-    if let Some(path) = output.typst_path {
-        println!("Typst: {}", path.display());
     }
     if let Some(path) = output.json_path {
         println!("JSON: {}", path.display());

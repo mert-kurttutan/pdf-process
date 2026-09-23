@@ -3,19 +3,7 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use pdf_process::{
-    html_to_typst::html_to_typst,
-    mathjax_preview::{render_mathjax_preview, write_mathjax_preview},
-};
-
-#[test]
-fn html_to_typst_maps_headings_paragraphs_and_math() {
-    let typst =
-        html_to_typst("<h1>Title</h1><p>Area</p><p><span class='math'>A = pi r^2</span></p>");
-    assert!(typst.contains("= Title"));
-    assert!(typst.contains("Area"));
-    assert!(typst.contains("$ A = pi r^2 $"));
-}
+use pdf_process::mathjax_preview::{render_mathjax_preview, write_mathjax_preview};
 
 #[test]
 fn mathjax_preview_defaults_to_a_sidecar() {

@@ -3,13 +3,9 @@
 
   inputs = {
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
-    typst-nix = {
-      url = "github:mert-kurttutan/typst-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { nixpkgs, typst-nix, ... }:
+  outputs = { nixpkgs, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -28,7 +24,6 @@
               lld
               rustc
               rustfmt
-              typst-nix.packages.${system}.typst
             ];
 
             shellHook = ''

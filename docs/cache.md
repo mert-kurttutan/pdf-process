@@ -30,7 +30,7 @@ The key is the lowercase hexadecimal SHA-256 digest of:
    ```text
    stem=<stem>
    mode=<mode>
-   typst=<true|false>
+   json=<true|false>
    mathjax=<true|false>
    metadata=<true|false>
    ```
@@ -46,7 +46,7 @@ Changing the PDF, stem, or any listed option creates a different cache entry.
 └── artifacts/
     ├── <stem>.html
     ├── <stem>.mathjax.html
-    ├── <stem>.typ
+    ├── <stem>.json
     ├── <stem>.datalab.json
     └── <returned-image-paths>.png
 ```

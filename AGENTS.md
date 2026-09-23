@@ -1,9 +1,7 @@
 # Agent Notes
 
 This project is a Rust CLI that converts PDFs into HTML through the Datalab
-Convert API, with optional Typst output generated from the returned HTML.
-
-Use the nearby `/home/kmert/projects/pdf-to-typst` project as workflow context:
+Convert API.
 
 - Send the whole PDF to Datalab `/api/v1/convert` with `output_format=html`.
 - Run the conversion through the single `pdf-process html` subcommand.
@@ -13,12 +11,11 @@ Use the nearby `/home/kmert/projects/pdf-to-typst` project as workflow context:
 - Do not set `page_range` or `max_pages` for the default workflow.
 - Store all generated artifacts in `<stem>.out/` beside the input PDF, or
   under `<output-dir>/<stem>.out/` when `--output-dir` is supplied.
-- Save returned HTML, MathJax HTML, metadata, Typst, and extracted images in
+- Save returned HTML, MathJax HTML, metadata, and extracted images in
   that output directory. MathJax HTML is enabled by default.
 - Refuse to run when the target output path is a file or a non-empty
   directory; an existing empty output directory may be reused.
 - Keep equations semantic. Do not represent math as positioned glyph fragments.
-- If adding Typst authoring behavior, follow `/home/kmert/projects/pdf-to-typst/.skills/typst/SKILL.md`.
 
 Development commands:
 

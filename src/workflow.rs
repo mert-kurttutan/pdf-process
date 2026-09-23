@@ -11,7 +11,6 @@ use thiserror::Error;
 
 use crate::{
     datalab::{ConvertResult, DatalabError, DatalabOptions, convert_pdf_to_html},
-    html_to_typst::html_to_typst,
     mathjax_preview::render_mathjax_preview,
 };
 
@@ -35,7 +34,6 @@ pub struct WorkflowOptions {
     pub cache_dir: Option<PathBuf>,
     pub force: bool,
     pub mode: String,
-    pub typst: bool,
     pub json: bool,
     pub mathjax_preview: bool,
     pub save_metadata: bool,
@@ -51,7 +49,6 @@ impl Default for WorkflowOptions {
             cache_dir: None,
             force: false,
             mode: "accurate".to_owned(),
-            typst: false,
             json: false,
             mathjax_preview: true,
             save_metadata: true,
@@ -67,7 +64,6 @@ pub struct WorkflowOutput {
     pub html_path: PathBuf,
     pub image_paths: Vec<PathBuf>,
     pub mathjax_html_path: Option<PathBuf>,
-    pub typst_path: Option<PathBuf>,
     pub json_path: Option<PathBuf>,
     pub metadata_path: Option<PathBuf>,
     pub cached: bool,
@@ -269,8 +265,8 @@ fn cache_key(input_pdf: &Path, options: &WorkflowOptions) -> Result<String, Work
     hasher.update(b"\0stem=");
     hasher.update(input_pdf.file_stem().unwrap_or_default().as_encoded_bytes());
     hasher.update(format!(
-        "\0mode={}\0typst={}\0json={}\0mathjax={}\0metadata={}",
-        options.mode, options.typst, options.json, options.mathjax_preview, options.save_metadata
+        "\0mode={}\0json={}\0mathjax={}\0metadata={}",
+        options.mode, options.json, options.mathjax_preview, options.save_metadata
     ));
     Ok(hex_digest(&hasher.finalize()))
 }
@@ -335,12 +331,6 @@ fn write_outputs(
             render_mathjax_preview(&result.html).as_bytes(),
         )?;
     }
-    if options.typst {
-        write_atomic(
-            &target_dir.join(format!("{stem}.typ")),
-            html_to_typst(&result.html).as_bytes(),
-        )?;
-    }
     if let Some(json) = &result.json {
         let contents = serde_json::to_string_pretty(json)? + "\n";
         write_atomic(
@@ -384,9 +374,6 @@ fn output_paths(
     let mathjax_html_path = options
         .mathjax_preview
         .then(|| target_dir.join(format!("{stem}.mathjax.html")));
-    let typst_path = options
-        .typst
-        .then(|| target_dir.join(format!("{stem}.typ")));
     let json_path = options
         .json
         .then(|| target_dir.join(format!("{stem}.json")));
@@ -399,7 +386,6 @@ fn output_paths(
         html_path,
         image_paths,
         mathjax_html_path,
-        typst_path,
         json_path,
         metadata_path,
         cached,
@@ -640,11 +626,6 @@ mod tests {
             std::env::temp_dir().join(format!("pdf-process-cache-key-{}", std::process::id()));
         fs::write(&path, b"pdf").unwrap();
         let first = cache_key(&path, &WorkflowOptions::default()).unwrap();
-        let options = WorkflowOptions {
-            typst: true,
-            ..WorkflowOptions::default()
-        };
-        let second = cache_key(&path, &options).unwrap();
         let json_options = WorkflowOptions {
             json: true,
             ..WorkflowOptions::default()
@@ -653,7 +634,6 @@ mod tests {
         fs::write(&path, b"different pdf").unwrap();
         let third = cache_key(&path, &WorkflowOptions::default()).unwrap();
         fs::remove_file(path).unwrap();
-        assert_ne!(first, second);
         assert_ne!(first, json_key);
         assert_ne!(first, third);
     }
