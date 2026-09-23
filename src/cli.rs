@@ -28,10 +28,13 @@ pub struct HtmlArgs {
     /// Datalab API key. Defaults to `DATALAB_API_KEY`.
     #[arg(long)]
     pub api_key: Option<String>,
+    /// Parent directory for `<pdf-stem>.out`.
+    #[arg(long)]
+    pub output_dir: Option<PathBuf>,
     /// Directory containing the local conversion cache.
     #[arg(long)]
     pub cache_dir: Option<PathBuf>,
-    /// Ignore a matching cache entry and perform a fresh conversion.
+    /// Reconvert the PDF and replace an existing output directory.
     #[arg(long)]
     pub force: bool,
     /// Datalab conversion mode for the whole PDF.
@@ -74,6 +77,7 @@ pub fn run() -> Result<(), WorkflowError> {
     } = Cli::parse();
     let options = WorkflowOptions {
         api_key: args.api_key,
+        output_dir: args.output_dir,
         cache_dir: args.cache_dir,
         force: args.force,
         mode: args.mode,

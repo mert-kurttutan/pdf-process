@@ -7,7 +7,7 @@ The primary workflow is:
 
 1. Send the whole PDF to Datalab `/api/v1/convert` with `output_format=html`.
 2. Poll the Datalab result endpoint until conversion completes.
-3. Save the returned HTML and extracted images in the local cache.
+3. Save the returned HTML and extracted images in a `<stem>.out` directory.
 4. If requested, convert that saved HTML into a `.typ` artifact.
 
 ## Requirements
@@ -36,12 +36,12 @@ export DATALAB_API_KEY=...
 cargo run -- html assets/paper.pdf
 ```
 
-This writes under the cache's artifact directory:
+This writes beside the PDF:
 
 ```text
-<cache>/<cache-key>/artifacts/paper.html
-<cache>/<cache-key>/artifacts/paper.mathjax.html
-<cache>/<cache-key>/artifacts/paper.datalab.json
+assets/paper.out/paper.html
+assets/paper.out/paper.mathjax.html
+assets/paper.out/paper.datalab.json
 ```
 
 Also generate Typst from the returned HTML:
@@ -53,7 +53,7 @@ cargo run -- html assets/paper.pdf --typst
 This also writes:
 
 ```text
-<cache>/<cache-key>/artifacts/paper.typ
+assets/paper.out/paper.typ
 ```
 
 MathJax browser preview generation is enabled by default:
@@ -74,17 +74,22 @@ Choose a Datalab mode:
 cargo run -- html assets/paper.pdf --mode balanced
 ```
 
-Artifacts are stored in a local content-addressed cache and reused when the
-PDF and conversion options match:
+Use `--output-dir results` to write to `results/paper.out/`. The output path
+must be absent or an empty directory. Use `--force` to reconvert and replace a
+non-empty output directory.
+
+Every completed conversion is also saved in the local cache, whether or not
+`--output-dir` is supplied. Cached results are reused when the PDF and
+conversion options match:
 
 ```sh
 cargo run -- html assets/paper.pdf
 ```
 
-Use `--force` to bypass a matching cache entry, `--cache-dir` to choose the
-cache location. By default, the cache is stored in the operating system's
-per-user cache directory. The command reports whether the result was cached
-and prints paths for HTML, extracted PNGs, MathJax HTML, Typst, and metadata.
+Use `--cache-dir` to choose the cache location. By default, the cache is stored
+in the operating system's per-user cache directory. The command reports whether
+the result was cached and prints paths for HTML, extracted PNGs, MathJax HTML,
+Typst, and metadata.
 See [docs/cache.md](docs/cache.md) for the cache layout and hashing details.
 
 ## Math And Typst

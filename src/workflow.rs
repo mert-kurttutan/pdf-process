@@ -31,6 +31,7 @@ pub enum WorkflowError {
 #[allow(clippy::struct_excessive_bools)]
 pub struct WorkflowOptions {
     pub api_key: Option<String>,
+    pub output_dir: Option<PathBuf>,
     pub cache_dir: Option<PathBuf>,
     pub force: bool,
     pub mode: String,
@@ -45,6 +46,7 @@ impl Default for WorkflowOptions {
     fn default() -> Self {
         Self {
             api_key: None,
+            output_dir: None,
             cache_dir: None,
             force: false,
             mode: "accurate".to_owned(),
@@ -68,7 +70,7 @@ pub struct WorkflowOutput {
     pub cached: bool,
 }
 
-/// Convert a PDF, reusing a completed local cache entry when possible.
+/// Convert a PDF into a predictable output directory, reusing a cache entry when possible.
 ///
 /// # Errors
 ///
@@ -78,13 +80,16 @@ pub fn convert_pdf(
     input_pdf: &Path,
     options: &WorkflowOptions,
 ) -> Result<WorkflowOutput, WorkflowError> {
+    let output_dir = output_directory(input_pdf, options);
+    validate_output_directory(&output_dir, options.force)?;
     let cache_root = cache_directory(input_pdf, options);
     fs::create_dir_all(&cache_root)?;
     let cache_key = cache_key(input_pdf, options)?;
     let cache_entry = cache_root.join(&cache_key);
 
     if !options.force && cache_entry_is_complete(&cache_entry) {
-        return output_paths(&cache_entry.join("artifacts"), input_pdf, options, true);
+        copy_artifacts(&cache_entry.join("artifacts"), &output_dir)?;
+        return output_paths(&output_dir, input_pdf, options, true);
     }
 
     let staging_dir = staging_directory(&cache_root, &cache_key)?;
@@ -105,7 +110,87 @@ pub fn convert_pdf(
         fs::remove_dir_all(&cache_entry)?;
     }
     fs::rename(&staging_dir, &cache_entry)?;
-    output_paths(&cache_entry.join("artifacts"), input_pdf, options, false)
+    copy_artifacts(&cache_entry.join("artifacts"), &output_dir)?;
+    output_paths(&output_dir, input_pdf, options, false)
+}
+
+fn output_directory(input_pdf: &Path, options: &WorkflowOptions) -> PathBuf {
+    let stem = input_pdf.file_stem().unwrap_or_default().to_string_lossy();
+    let parent = options.output_dir.clone().unwrap_or_else(|| {
+        input_pdf
+            .parent()
+            .unwrap_or_else(|| Path::new("."))
+            .to_path_buf()
+    });
+    parent.join(format!("{stem}.out"))
+}
+
+fn validate_output_directory(path: &Path, force: bool) -> Result<(), WorkflowError> {
+    if path.is_file() {
+        return Err(std::io::Error::new(
+            ErrorKind::AlreadyExists,
+            format!("output path is a file: {}", path.display()),
+        )
+        .into());
+    }
+    if path.is_dir() && !force && fs::read_dir(path)?.next().is_some() {
+        return Err(std::io::Error::new(
+            ErrorKind::AlreadyExists,
+            format!(
+                "output directory is not empty: {} (use --force to replace it)",
+                path.display()
+            ),
+        )
+        .into());
+    }
+    Ok(())
+}
+
+fn copy_artifacts(source: &Path, target: &Path) -> Result<(), WorkflowError> {
+    let parent = target.parent().unwrap_or_else(|| Path::new("."));
+    fs::create_dir_all(parent)?;
+    let name = target.file_name().unwrap_or_default().to_string_lossy();
+    let mut staging = None;
+    for attempt in 0..100 {
+        let candidate = parent.join(format!(".{name}.partial-{}-{attempt}", std::process::id()));
+        match fs::create_dir(&candidate) {
+            Ok(()) => {
+                staging = Some(candidate);
+                break;
+            }
+            Err(error) if error.kind() == ErrorKind::AlreadyExists => {}
+            Err(error) => return Err(error.into()),
+        }
+    }
+    let staging = staging.ok_or_else(|| {
+        std::io::Error::new(
+            ErrorKind::AlreadyExists,
+            "too many output staging directories",
+        )
+    })?;
+    if let Err(error) = copy_directory_contents(source, &staging) {
+        let _ = fs::remove_dir_all(&staging);
+        return Err(error);
+    }
+    if target.exists() {
+        fs::remove_dir_all(target)?;
+    }
+    fs::rename(staging, target)?;
+    Ok(())
+}
+
+fn copy_directory_contents(source: &Path, target: &Path) -> Result<(), WorkflowError> {
+    for entry in fs::read_dir(source)? {
+        let entry = entry?;
+        let destination = target.join(entry.file_name());
+        if entry.file_type()?.is_dir() {
+            fs::create_dir(&destination)?;
+            copy_directory_contents(&entry.path(), &destination)?;
+        } else {
+            fs::copy(entry.path(), destination)?;
+        }
+    }
+    Ok(())
 }
 
 fn cache_directory(_input_pdf: &Path, options: &WorkflowOptions) -> PathBuf {
@@ -155,6 +240,8 @@ fn home_directory() -> Option<PathBuf> {
 fn cache_key(input_pdf: &Path, options: &WorkflowOptions) -> Result<String, WorkflowError> {
     let mut hasher = Sha256::new();
     hasher.update(fs::read(input_pdf)?);
+    hasher.update(b"\0stem=");
+    hasher.update(input_pdf.file_stem().unwrap_or_default().as_encoded_bytes());
     hasher.update(format!(
         "\0mode={}\0typst={}\0mathjax={}\0metadata={}",
         options.mode, options.typst, options.mathjax_preview, options.save_metadata
@@ -335,10 +422,89 @@ fn metadata_json(result: &ConvertResult) -> Result<String, serde_json::Error> {
 
 #[cfg(test)]
 mod tests {
-    use super::{WorkflowOptions, cache_directory, cache_key, metadata_json};
+    use super::{
+        WorkflowOptions, cache_directory, cache_key, convert_pdf, metadata_json, output_directory,
+    };
     use crate::datalab::ConvertResult;
     use serde_json::json;
-    use std::{fs, path::Path};
+    use std::{
+        fs,
+        path::Path,
+        time::{SystemTime, UNIX_EPOCH},
+    };
+
+    #[test]
+    fn cache_hit_materializes_output_and_refuses_to_replace_it() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = std::env::temp_dir().join(format!(
+            "pdf-process-output-{}-{unique}",
+            std::process::id()
+        ));
+        fs::create_dir(&root).unwrap();
+        let pdf = root.join("paper.pdf");
+        fs::write(&pdf, b"pdf fixture").unwrap();
+        let options = WorkflowOptions {
+            cache_dir: Some(root.join("cache")),
+            ..WorkflowOptions::default()
+        };
+        assert_eq!(output_directory(&pdf, &options), root.join("paper.out"));
+        let cache_entry = options
+            .cache_dir
+            .as_ref()
+            .unwrap()
+            .join(cache_key(&pdf, &options).unwrap());
+        let artifacts = cache_entry.join("artifacts");
+        fs::create_dir_all(artifacts.join("images")).unwrap();
+        fs::write(cache_entry.join("manifest.json"), b"{}").unwrap();
+        fs::write(artifacts.join("paper.html"), b"<p>cached</p>").unwrap();
+        fs::write(artifacts.join("paper.mathjax.html"), b"<p>cached</p>").unwrap();
+        fs::write(artifacts.join("paper.datalab.json"), b"{}").unwrap();
+        fs::write(artifacts.join("images/figure.png"), b"png").unwrap();
+
+        let output = convert_pdf(&pdf, &options).unwrap();
+        assert!(output.cached);
+        assert_eq!(output.html_path, root.join("paper.out/paper.html"));
+        assert_eq!(
+            fs::read_to_string(output.html_path).unwrap(),
+            "<p>cached</p>"
+        );
+        assert_eq!(
+            output.image_paths,
+            vec![root.join("paper.out/images/figure.png")]
+        );
+        assert!(convert_pdf(&pdf, &options).is_err());
+
+        let custom = WorkflowOptions {
+            output_dir: Some(root.join("results")),
+            ..options.clone()
+        };
+        let custom_output = convert_pdf(&pdf, &custom).unwrap();
+        assert_eq!(
+            custom_output.html_path,
+            root.join("results/paper.out/paper.html")
+        );
+        assert!(custom_output.cached);
+        assert!(cache_entry.join("artifacts/paper.html").is_file());
+        assert_eq!(
+            cache_key(&pdf, &custom).unwrap(),
+            cache_key(&pdf, &options).unwrap()
+        );
+
+        let blocked = root.join("blocked.out");
+        fs::write(&blocked, b"file").unwrap();
+        let file_output = WorkflowOptions {
+            output_dir: Some(root.clone()),
+            ..options
+        };
+        let other_pdf = root.join("blocked.pdf");
+        fs::write(&other_pdf, b"pdf fixture").unwrap();
+        assert!(convert_pdf(&other_pdf, &file_output).is_err());
+
+        fs::remove_dir_all(root).unwrap();
+    }
 
     #[test]
     fn workflow_defaults_match_the_cli_contract() {

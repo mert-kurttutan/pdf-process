@@ -1,8 +1,10 @@
 # Cache and hashing
 
 `pdf-process` stores completed conversions in a local filesystem cache. The
-cache is the canonical artifact location; there is no separate output
-directory.
+user-facing artifacts are copied into `<stem>.out/` beside the input PDF, or
+`<output-dir>/<stem>.out/` when `--output-dir` is supplied.
+`--output-dir` does not change the cache location or whether a completed
+conversion is cached.
 
 ## Cache location
 
@@ -23,17 +25,18 @@ Without an override, the default is the per-user OS cache directory:
 The key is the lowercase hexadecimal SHA-256 digest of:
 
 1. The exact bytes of the input PDF.
-2. A NUL separator followed by the conversion options:
+2. The PDF stem and conversion options, separated by NUL bytes:
 
    ```text
+   stem=<stem>
    mode=<mode>
    typst=<true|false>
    mathjax=<true|false>
    metadata=<true|false>
    ```
 
-The API key, input path, filename, and modification time are not included.
-Changing the PDF or any listed option creates a different cache entry.
+The API key, parent directory, extension, and modification time are not included.
+Changing the PDF, stem, or any listed option creates a different cache entry.
 
 ## Layout
 
@@ -58,5 +61,5 @@ cache only after conversion and derived-file generation succeed. Individual
 files are also written through temporary files and atomic renames. Incomplete
 `.partial-*` directories are never treated as cache hits.
 
-Use `--force` to bypass an existing matching entry and perform a new Datalab
-conversion.
+Use `--force` to bypass an existing matching entry, perform a new Datalab
+conversion, and replace an existing output directory.
