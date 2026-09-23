@@ -63,3 +63,14 @@ files are also written through temporary files and atomic renames. Incomplete
 
 Use `--force` to bypass an existing matching entry, perform a new Datalab
 conversion, and replace an existing output directory.
+
+## Clean the cache
+
+```sh
+pdf-process cache clean
+pdf-process cache clean --cache-dir /path/to/pdf-cache
+```
+
+The command removes the entire selected cache directory, including incomplete
+entries. It leaves generated `.out/` directories alone. Running it when the
+cache directory does not exist succeeds without changing anything.

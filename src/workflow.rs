@@ -114,6 +114,28 @@ pub fn convert_pdf(
     output_paths(&output_dir, input_pdf, options, false)
 }
 
+/// Remove the entire cache directory, including incomplete conversions.
+///
+/// # Errors
+///
+/// Returns an error if the cache path is not a directory or cannot be removed.
+pub fn clean_cache(cache_dir: Option<&Path>) -> Result<PathBuf, WorkflowError> {
+    let path = cache_dir.map_or_else(default_cache_directory, Path::to_path_buf);
+    match fs::symlink_metadata(&path) {
+        Ok(metadata) if metadata.file_type().is_dir() => fs::remove_dir_all(&path)?,
+        Ok(_) => {
+            return Err(std::io::Error::new(
+                ErrorKind::InvalidInput,
+                format!("cache path is not a directory: {}", path.display()),
+            )
+            .into());
+        }
+        Err(error) if error.kind() == ErrorKind::NotFound => {}
+        Err(error) => return Err(error.into()),
+    }
+    Ok(path)
+}
+
 fn output_directory(input_pdf: &Path, options: &WorkflowOptions) -> PathBuf {
     let stem = input_pdf.file_stem().unwrap_or_default().to_string_lossy();
     let parent = options.output_dir.clone().unwrap_or_else(|| {
@@ -423,7 +445,8 @@ fn metadata_json(result: &ConvertResult) -> Result<String, serde_json::Error> {
 #[cfg(test)]
 mod tests {
     use super::{
-        WorkflowOptions, cache_directory, cache_key, convert_pdf, metadata_json, output_directory,
+        WorkflowOptions, cache_directory, cache_key, clean_cache, convert_pdf, metadata_json,
+        output_directory,
     };
     use crate::datalab::ConvertResult;
     use serde_json::json;
@@ -432,6 +455,29 @@ mod tests {
         path::Path,
         time::{SystemTime, UNIX_EPOCH},
     };
+
+    #[test]
+    fn clean_cache_removes_the_whole_cache_directory() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root =
+            std::env::temp_dir().join(format!("pdf-process-clean-{}-{unique}", std::process::id()));
+        let cache = root.join("cache");
+        let output = root.join("paper.out");
+        fs::create_dir_all(cache.join("entry/artifacts")).unwrap();
+        fs::create_dir_all(cache.join(".entry.partial-0")).unwrap();
+        fs::write(cache.join("other-file"), b"data").unwrap();
+        fs::create_dir(&output).unwrap();
+
+        assert_eq!(clean_cache(Some(&cache)).unwrap(), cache);
+        assert!(!cache.exists());
+        assert!(output.exists());
+        assert_eq!(clean_cache(Some(&cache)).unwrap(), cache);
+
+        fs::remove_dir_all(root).unwrap();
+    }
 
     #[test]
     fn cache_hit_materializes_output_and_refuses_to_replace_it() {

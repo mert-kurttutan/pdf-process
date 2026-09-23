@@ -2,7 +2,7 @@ use std::{path::PathBuf, time::Duration};
 
 use clap::{ArgAction, Parser, Subcommand};
 
-use crate::workflow::{WorkflowError, WorkflowOptions, convert_pdf};
+use crate::workflow::{WorkflowError, WorkflowOptions, clean_cache, convert_pdf};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -18,6 +18,27 @@ pub struct Cli {
 pub enum Commands {
     /// Convert a whole PDF to Datalab HTML and optionally derive Typst.
     Html(HtmlArgs),
+    /// Manage cached conversions.
+    Cache(CacheArgs),
+}
+
+#[derive(Debug, clap::Args)]
+pub struct CacheArgs {
+    #[command(subcommand)]
+    pub command: CacheCommands,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum CacheCommands {
+    /// Remove the entire pdf-process cache directory.
+    Clean(CleanArgs),
+}
+
+#[derive(Debug, clap::Args)]
+pub struct CleanArgs {
+    /// Directory containing the local conversion cache.
+    #[arg(long)]
+    pub cache_dir: Option<PathBuf>,
 }
 
 #[derive(Debug, clap::Args)]
@@ -72,9 +93,19 @@ fn positive_seconds(value: &str) -> Result<f64, String> {
 ///
 /// Returns an error when argument parsing or PDF processing fails.
 pub fn run() -> Result<(), WorkflowError> {
-    let Cli {
-        command: Commands::Html(args),
-    } = Cli::parse();
+    match Cli::parse().command {
+        Commands::Html(args) => run_html(args),
+        Commands::Cache(CacheArgs {
+            command: CacheCommands::Clean(args),
+        }) => {
+            let cache_dir = clean_cache(args.cache_dir.as_deref())?;
+            println!("Cleared cache: {}", cache_dir.display());
+            Ok(())
+        }
+    }
+}
+
+fn run_html(args: HtmlArgs) -> Result<(), WorkflowError> {
     let options = WorkflowOptions {
         api_key: args.api_key,
         output_dir: args.output_dir,
@@ -108,28 +139,53 @@ pub fn run() -> Result<(), WorkflowError> {
 
 #[cfg(test)]
 mod tests {
-    use super::{Cli, Commands};
+    use super::{CacheCommands, Cli, Commands};
     use clap::Parser;
 
     #[test]
     fn mathjax_preview_is_enabled_by_default() {
-        let Cli {
-            command: Commands::Html(args),
-        } = Cli::try_parse_from(["pdf-process", "html", "document.pdf"]).unwrap();
+        let Commands::Html(args) = Cli::try_parse_from(["pdf-process", "html", "document.pdf"])
+            .unwrap()
+            .command
+        else {
+            panic!("expected html command");
+        };
         assert!(args.mathjax_preview);
     }
 
     #[test]
     fn mathjax_preview_can_be_disabled() {
-        let Cli {
-            command: Commands::Html(args),
-        } = Cli::try_parse_from([
+        let Commands::Html(args) = Cli::try_parse_from([
             "pdf-process",
             "html",
             "document.pdf",
             "--no-mathjax-preview",
         ])
-        .unwrap();
+        .unwrap()
+        .command
+        else {
+            panic!("expected html command");
+        };
         assert!(!args.mathjax_preview);
+    }
+
+    #[test]
+    fn parses_cache_clean_with_custom_directory() {
+        let cli = Cli::try_parse_from([
+            "pdf-process",
+            "cache",
+            "clean",
+            "--cache-dir",
+            "/tmp/my-cache",
+        ])
+        .unwrap();
+        let Commands::Cache(cache) = cli.command else {
+            panic!("expected cache command");
+        };
+        let CacheCommands::Clean(args) = cache.command;
+        assert_eq!(
+            args.cache_dir.unwrap(),
+            std::path::PathBuf::from("/tmp/my-cache")
+        );
     }
 }

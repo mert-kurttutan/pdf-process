@@ -92,6 +92,15 @@ the result was cached and prints paths for HTML, extracted PNGs, MathJax HTML,
 Typst, and metadata.
 See [docs/cache.md](docs/cache.md) for the cache layout and hashing details.
 
+Remove all cached conversions and incomplete cache files:
+
+```sh
+pdf-process cache clean
+```
+
+Pass `--cache-dir /path/to/pdf-cache` to clean a custom cache directory. This
+removes the cache directory itself; `.out/` artifact directories are unaffected.
+
 ## Math And Typst
 
 Datalab performs the PDF-to-HTML conversion, including math-oriented parsing
