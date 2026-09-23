@@ -56,6 +56,17 @@ This also writes:
 assets/paper.out/paper.typ
 ```
 
+Also request Datalab's block-level JSON in the same conversion:
+
+```sh
+cargo run -- html assets/paper.pdf --json
+```
+
+This also writes `assets/paper.out/paper.json`. It contains Datalab's document
+block tree, including block types and bounding boxes. The separate
+`paper.datalab.json` file contains conversion metadata. `--json` can be combined
+with `--typst`.
+
 MathJax browser preview generation is enabled by default:
 
 ```sh

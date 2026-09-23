@@ -40,6 +40,8 @@ pub enum DatalabError {
     MissingCheckUrl,
     #[error("Datalab conversion completed without HTML output")]
     MissingHtml,
+    #[error("Datalab conversion completed without JSON output")]
+    MissingJson,
     #[error("timed out waiting for Datalab conversion; last status: {0}")]
     TimedOut(String),
     #[error("Datalab returned an invalid result URL: {0}")]
@@ -57,6 +59,7 @@ pub struct DatalabOptions {
     pub api_key: Option<String>,
     pub mode: String,
     pub add_block_ids: bool,
+    pub json: bool,
     pub poll_interval: Duration,
     pub timeout: Duration,
 }
@@ -67,6 +70,7 @@ impl Default for DatalabOptions {
             api_key: None,
             mode: "accurate".to_owned(),
             add_block_ids: true,
+            json: false,
             poll_interval: Duration::from_secs(2),
             timeout: Duration::from_secs(600),
         }
@@ -76,10 +80,11 @@ impl Default for DatalabOptions {
 #[derive(Debug, Clone)]
 pub struct ConvertResult {
     pub html: String,
+    pub json: Option<Value>,
     pub raw_response: Map<String, Value>,
 }
 
-/// Convert one whole PDF into Datalab HTML.
+/// Convert one whole PDF into Datalab HTML and optional block JSON.
 ///
 /// # Errors
 ///
@@ -111,7 +116,10 @@ pub fn convert_pdf_to_html(
         .mime_str("application/pdf")?;
     let form = multipart::Form::new()
         .text("mode", options.mode.clone())
-        .text("output_format", "html")
+        .text(
+            "output_format",
+            if options.json { "html,json" } else { "html" },
+        )
         .text("paginate", "false")
         .text("add_block_ids", bool_form(options.add_block_ids))
         .text("disable_image_extraction", "false")
@@ -158,9 +166,21 @@ pub fn convert_pdf_to_html(
         .filter(|html| !html.trim().is_empty())
         .ok_or(DatalabError::MissingHtml)?
         .to_owned();
+    let json = if options.json {
+        Some(
+            result
+                .get("json")
+                .filter(|value| value.is_object())
+                .ok_or(DatalabError::MissingJson)?
+                .clone(),
+        )
+    } else {
+        None
+    };
     save_images(output_dir, result.get("images"))?;
     Ok(ConvertResult {
         html,
+        json,
         raw_response: result,
     })
 }

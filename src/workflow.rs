@@ -36,6 +36,7 @@ pub struct WorkflowOptions {
     pub force: bool,
     pub mode: String,
     pub typst: bool,
+    pub json: bool,
     pub mathjax_preview: bool,
     pub save_metadata: bool,
     pub poll_interval: Duration,
@@ -51,6 +52,7 @@ impl Default for WorkflowOptions {
             force: false,
             mode: "accurate".to_owned(),
             typst: false,
+            json: false,
             mathjax_preview: true,
             save_metadata: true,
             poll_interval: Duration::from_secs(2),
@@ -66,6 +68,7 @@ pub struct WorkflowOutput {
     pub image_paths: Vec<PathBuf>,
     pub mathjax_html_path: Option<PathBuf>,
     pub typst_path: Option<PathBuf>,
+    pub json_path: Option<PathBuf>,
     pub metadata_path: Option<PathBuf>,
     pub cached: bool,
 }
@@ -98,6 +101,7 @@ pub fn convert_pdf(
     let datalab_options = DatalabOptions {
         api_key: options.api_key.clone(),
         mode: options.mode.clone(),
+        json: options.json,
         poll_interval: options.poll_interval,
         timeout: options.timeout,
         ..DatalabOptions::default()
@@ -265,8 +269,8 @@ fn cache_key(input_pdf: &Path, options: &WorkflowOptions) -> Result<String, Work
     hasher.update(b"\0stem=");
     hasher.update(input_pdf.file_stem().unwrap_or_default().as_encoded_bytes());
     hasher.update(format!(
-        "\0mode={}\0typst={}\0mathjax={}\0metadata={}",
-        options.mode, options.typst, options.mathjax_preview, options.save_metadata
+        "\0mode={}\0typst={}\0json={}\0mathjax={}\0metadata={}",
+        options.mode, options.typst, options.json, options.mathjax_preview, options.save_metadata
     ));
     Ok(hex_digest(&hasher.finalize()))
 }
@@ -337,6 +341,13 @@ fn write_outputs(
             html_to_typst(&result.html).as_bytes(),
         )?;
     }
+    if let Some(json) = &result.json {
+        let contents = serde_json::to_string_pretty(json)? + "\n";
+        write_atomic(
+            &target_dir.join(format!("{stem}.json")),
+            contents.as_bytes(),
+        )?;
+    }
     if options.save_metadata {
         write_atomic(
             &target_dir.join(format!("{stem}.datalab.json")),
@@ -376,6 +387,9 @@ fn output_paths(
     let typst_path = options
         .typst
         .then(|| target_dir.join(format!("{stem}.typ")));
+    let json_path = options
+        .json
+        .then(|| target_dir.join(format!("{stem}.json")));
     let metadata_path = options
         .save_metadata
         .then(|| target_dir.join(format!("{stem}.datalab.json")));
@@ -386,6 +400,7 @@ fn output_paths(
         image_paths,
         mathjax_html_path,
         typst_path,
+        json_path,
         metadata_path,
         cached,
     })
@@ -446,10 +461,10 @@ fn metadata_json(result: &ConvertResult) -> Result<String, serde_json::Error> {
 mod tests {
     use super::{
         WorkflowOptions, cache_directory, cache_key, clean_cache, convert_pdf, metadata_json,
-        output_directory,
+        output_directory, output_paths, write_outputs,
     };
     use crate::datalab::ConvertResult;
-    use serde_json::json;
+    use serde_json::{Map, json};
     use std::{
         fs,
         path::Path,
@@ -558,6 +573,7 @@ mod tests {
         assert_eq!(options.mode, "accurate");
         assert!(options.save_metadata);
         assert!(options.mathjax_preview);
+        assert!(!options.json);
         assert!(!options.force);
     }
 
@@ -565,6 +581,7 @@ mod tests {
     fn metadata_keeps_documented_response_fields() {
         let result = ConvertResult {
             html: "<p>Done</p>".to_owned(),
+            json: None,
             raw_response: [
                 ("status".to_owned(), json!("complete")),
                 ("page_count".to_owned(), json!(3)),
@@ -579,6 +596,45 @@ mod tests {
     }
 
     #[test]
+    fn json_output_is_saved_separately_from_metadata() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root =
+            std::env::temp_dir().join(format!("pdf-process-json-{}-{unique}", std::process::id()));
+        fs::create_dir(&root).unwrap();
+        let pdf = root.join("paper.pdf");
+        let artifacts = root.join("paper.out");
+        let options = WorkflowOptions {
+            json: true,
+            save_metadata: false,
+            mathjax_preview: false,
+            ..WorkflowOptions::default()
+        };
+        let blocks = json!({"block_type": "Document", "children": [{"id": "/page/0/Text/1"}]});
+        let result = ConvertResult {
+            html: "<p>Done</p>".to_owned(),
+            json: Some(blocks.clone()),
+            raw_response: Map::new(),
+        };
+
+        write_outputs(&artifacts, &pdf, &options, &result).unwrap();
+        let output = output_paths(&artifacts, &pdf, &options, false).unwrap();
+        assert_eq!(output.json_path, Some(artifacts.join("paper.json")));
+        assert_eq!(
+            serde_json::from_str::<serde_json::Value>(
+                &fs::read_to_string(output.json_path.unwrap()).unwrap()
+            )
+            .unwrap(),
+            blocks
+        );
+        assert!(!artifacts.join("paper.datalab.json").exists());
+
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
     fn cache_key_changes_when_input_or_options_change() {
         let path =
             std::env::temp_dir().join(format!("pdf-process-cache-key-{}", std::process::id()));
@@ -589,10 +645,16 @@ mod tests {
             ..WorkflowOptions::default()
         };
         let second = cache_key(&path, &options).unwrap();
+        let json_options = WorkflowOptions {
+            json: true,
+            ..WorkflowOptions::default()
+        };
+        let json_key = cache_key(&path, &json_options).unwrap();
         fs::write(&path, b"different pdf").unwrap();
         let third = cache_key(&path, &WorkflowOptions::default()).unwrap();
         fs::remove_file(path).unwrap();
         assert_ne!(first, second);
+        assert_ne!(first, json_key);
         assert_ne!(first, third);
     }
 

@@ -64,6 +64,9 @@ pub struct HtmlArgs {
     /// Also generate a Typst file from the returned HTML.
     #[arg(long)]
     pub typst: bool,
+    /// Also save Datalab's block-level JSON output.
+    #[arg(long)]
+    pub json: bool,
     /// Do not generate the `.mathjax.html` browser preview.
     #[arg(long = "no-mathjax-preview", action = ArgAction::SetFalse, default_value_t = true)]
     pub mathjax_preview: bool,
@@ -113,6 +116,7 @@ fn run_html(args: HtmlArgs) -> Result<(), WorkflowError> {
         force: args.force,
         mode: args.mode,
         typst: args.typst,
+        json: args.json,
         mathjax_preview: args.mathjax_preview,
         save_metadata: !args.no_metadata,
         poll_interval: Duration::from_secs_f64(args.poll_interval),
@@ -130,6 +134,9 @@ fn run_html(args: HtmlArgs) -> Result<(), WorkflowError> {
     }
     if let Some(path) = output.typst_path {
         println!("Typst: {}", path.display());
+    }
+    if let Some(path) = output.json_path {
+        println!("JSON: {}", path.display());
     }
     if let Some(path) = output.metadata_path {
         println!("Metadata: {}", path.display());
@@ -167,6 +174,26 @@ mod tests {
             panic!("expected html command");
         };
         assert!(!args.mathjax_preview);
+    }
+
+    #[test]
+    fn json_output_is_opt_in() {
+        let Commands::Html(default) = Cli::try_parse_from(["pdf-process", "html", "document.pdf"])
+            .unwrap()
+            .command
+        else {
+            panic!("expected html command");
+        };
+        assert!(!default.json);
+
+        let Commands::Html(with_json) =
+            Cli::try_parse_from(["pdf-process", "html", "document.pdf", "--json"])
+                .unwrap()
+                .command
+        else {
+            panic!("expected html command");
+        };
+        assert!(with_json.json);
     }
 
     #[test]
